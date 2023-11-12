@@ -1,11 +1,8 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +18,8 @@ import lombok.NoArgsConstructor;
 public class MedicineEntity {
     
     @Id
+    private String id;
+    
     private String medicineId;
 
     private String name;
@@ -28,5 +27,5 @@ public class MedicineEntity {
     private String dosage;
 
     private String frequency;
-    
+
 }

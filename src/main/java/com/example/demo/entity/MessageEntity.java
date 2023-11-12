@@ -1,11 +1,12 @@
 package com.example.demo.entity;
 
-import jakarta.persistence.CascadeType;
+import java.util.Date;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,5 +24,22 @@ public class MessageEntity{
     @Id
     private String messageId;
 
-    
+    @ManyToOne
+    @JoinColumn(name="receiver_id")
+    private PatientEntity recPatientEntity;
+
+    @ManyToOne
+    @JoinColumn(name="sender_id")
+    private PatientEntity senPatientEntity;
+
+    @Column(length = 4000)
+    private String text;
+
+    private MessageType messageType;
+
+    private Date date;
+
+    @Column(length = 1000)
+    private String summary;
+
 }

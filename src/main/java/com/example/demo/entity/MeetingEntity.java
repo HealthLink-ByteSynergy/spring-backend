@@ -1,7 +1,8 @@
 package com.example.demo.entity;
 
+import java.util.Date;
 
-import jakarta.persistence.CascadeType;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -13,21 +14,25 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "doctor")
+@Table(name = "meeting")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DoctorEntity {
+public class MeetingEntity {
     @Id
-    private String doctorId;
+    private String meetingId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="user_id")
-    private UserEntity userEntity;
+    private String meetingLink;
 
-    private String specialization;
+    @ManyToOne
+    @JoinColumn(name="patient_id")
+    private PatientEntity recPatientEntity;
 
-    private IsAvailable isAvailable;
+    @ManyToOne
+    @JoinColumn(name="doctor_id")
+    private DoctorEntity doctorEntity;
+
+    private Date date;
 
 }
