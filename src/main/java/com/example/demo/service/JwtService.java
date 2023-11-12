@@ -16,10 +16,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class Jwt_Service {
+public class JwtService {
     // Todo: import secret key from .env file
     private static final String SECRET_KEY = "PdRgUkXp2s5v8y3g324sweBEHMbQeThVmYq3t6w9zCFJNcRfUjXn2r4u7xAG";
-    private static final int TOKEN_EXPIRATION_HOURS = 10;
+    private static final int TOKEN_EXPIRATION_HOURS = 1000;
 
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(Decoders.BASE64.decode(SECRET_KEY));

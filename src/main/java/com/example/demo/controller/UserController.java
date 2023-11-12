@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.entity.User_Entity;
-import com.example.demo.exception.User_DuplicateEmailException;
-import com.example.demo.exception.User_NotFoundException;
-import com.example.demo.exception.User_WrongPasswordException;
-import com.example.demo.service.User_Service;
+import com.example.demo.entity.UserEntity;
+import com.example.demo.exception.UserDuplicateEmailException;
+import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.exception.UserWrongPasswordException;
+import com.example.demo.service.UserService;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import jakarta.servlet.http.Cookie;
@@ -19,17 +19,22 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
-public class User_Controller {
+public class UserController {
     
-    private final User_Service userService;
+    private final UserService userService;
 
     @PostMapping("/signup")
-    public String signup(@RequestBody User_Entity user) throws User_DuplicateEmailException {
+    public String signup(@RequestBody UserEntity user) throws UserDuplicateEmailException {
         return userService.signup(user);
     }
 
+    @PostMapping("/getUserDetails")
+    public UserEntity getUserDetails(@RequestBody UserEntity user) throws UserNotFoundException{
+        return userService.getUserDetails(user);
+    }
+
     @PostMapping("/login")
-    public String login(@RequestBody User_Entity user, HttpServletResponse response) throws User_WrongPasswordException, User_NotFoundException {
+    public String login(@RequestBody UserEntity user, HttpServletResponse response) throws UserWrongPasswordException, UserNotFoundException {
         String token = userService.login(user);
         if (token != null) {
             // TODO: set cookie

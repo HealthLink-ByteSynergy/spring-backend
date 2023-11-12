@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.Optional;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -8,46 +10,45 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Role;
-import com.example.demo.entity.User_Entity;
-import com.example.demo.exception.User_DuplicateEmailException;
-import com.example.demo.exception.User_NotFoundException;
-import com.example.demo.exception.User_WrongPasswordException;
-import com.example.demo.repository.User_Repository;
+import com.example.demo.entity.UserEntity;
+import com.example.demo.exception.UserDuplicateEmailException;
+import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.exception.UserWrongPasswordException;
+import com.example.demo.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class User_ServiceImpl implements User_Service {
+public class UserServiceImpl implements UserService {
 
-    private final User_Repository userRepository;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final Jwt_Service jwtService;
+    private final JwtService jwtService;
 
     @Override
-    public String signup(User_Entity user) throws User_DuplicateEmailException {
+    public String signup(UserEntity user) throws UserDuplicateEmailException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
-        String userId = UUID_Service.getUUID();
-        User_Entity userEntity = User_Entity
+        String userId = UUIDService.getUUID();
+        UserEntity userEntity = UserEntity
                 .builder()
                 .id(userId)
                 .username(user.getUser())
                 .email(user.getEmail())
                 .password(encodedPassword)
-                .gender(user.getGender())
                 .role(Role.USER)
                 .build();
         try{
             userRepository.save(userEntity);
         } catch (DataIntegrityViolationException e) {
-            throw new User_DuplicateEmailException("Email already exists");
+            throw new UserDuplicateEmailException("Email already exists");
         }
         return jwtService.generateToken(userEntity);
     }
 
     @Override
-    public String login(User_Entity user) throws User_NotFoundException, User_WrongPasswordException {
+    public String login(UserEntity user) throws UserNotFoundException, UserWrongPasswordException {
         System.out.println("Authenticating user: " + user.getEmail());
         try {
             authenticationManager.authenticate(
@@ -57,11 +58,21 @@ public class User_ServiceImpl implements User_Service {
                     )
             );
         }catch(AuthenticationException e) {
-            throw new User_WrongPasswordException("Wrong password");
+            throw new UserWrongPasswordException("Wrong password");
         }
 
         System.out.println("Authentication successful: " + user.getEmail());
-        User_Entity userEntity = userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new User_NotFoundException("User not found"));
+        UserEntity userEntity = userRepository.findByEmail(user.getEmail()).orElseThrow(() -> new UserNotFoundException("User not found"));
         return jwtService.generateToken(userEntity);
+    }
+
+    @Override
+    public UserEntity getUserDetails(UserEntity user) throws UserNotFoundException {
+        // need to change this
+        Optional<UserEntity> newUser=userRepository.findByEmail(user.getEmail());
+        if(newUser.isPresent()){
+            return newUser.get();
+        }
+        else throw new UserNotFoundException("This User doesn't exist"); 
     }
 }

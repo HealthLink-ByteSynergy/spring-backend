@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User_Entity implements UserDetails{
+public class UserEntity implements UserDetails{
     @Id
     private String id;
 
@@ -28,8 +28,6 @@ public class User_Entity implements UserDetails{
     private String email;
 
     private String password;
-
-    private char gender;
 
     @Enumerated(EnumType.STRING) // tells hibernate to store the enum as a string
     private Role role;

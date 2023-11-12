@@ -28,7 +28,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                     auth
                             // list of endpoints that don't need authentication
-                            .requestMatchers("/api/v1/user/**").permitAll()
+                            .requestMatchers("/api/v1/user/signup").permitAll()
+                            .requestMatchers("/api/v1/user/login").permitAll()
+                            .requestMatchers("/api/v1/user/logout").permitAll()
                             // any other request must be authenticated
                             .anyRequest().authenticated()
                 )
