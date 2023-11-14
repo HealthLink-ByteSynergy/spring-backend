@@ -33,8 +33,8 @@ public class SummariesEntity {
     @JoinColumn(name="patient_id")
     private PatientEntity patientEntity;
 
-    @Column(length = 1200)
-    private String summaryText;
+    @Column(length = 2000)
+    private String text;
 
     private Date date;
 

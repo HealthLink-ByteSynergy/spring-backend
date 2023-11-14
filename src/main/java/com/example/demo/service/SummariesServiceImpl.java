@@ -3,8 +3,6 @@ package com.example.demo.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.asynchttpclient.AsyncHttpClient;
-import org.asynchttpclient.DefaultAsyncHttpClient;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -68,9 +66,15 @@ public class SummariesServiceImpl implements SummariesService{
     }
 
     @Override
-    public SummariesEntity saveSummary(SummariesEntity summariesEntity) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveSummary'");
+    public SummariesEntity saveSummary(SummariesEntity summariesEntity) throws InvalidFormatException {
+        try{
+            final String summary=generateTempChatSummary(summariesEntity.getText());
+            summariesEntity.setText(summary);
+            return summariesRepository.save(summariesEntity);
+        }
+        catch(Exception ex){
+            throw new InvalidFormatException(ex.getMessage());
+        }
     }
 
     @Override
