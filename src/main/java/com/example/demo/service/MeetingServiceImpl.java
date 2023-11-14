@@ -3,7 +3,7 @@ package com.example.demo.service;
 import java.util.Date;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
+
 
 import com.example.demo.entity.MeetingEntity;
 import com.example.demo.exception.InvalidFormatException;
@@ -11,7 +11,7 @@ import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.repository.MeetingRepository;
 
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class MeetingServiceImpl implements MeetingService{
