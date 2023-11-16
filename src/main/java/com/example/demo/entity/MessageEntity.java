@@ -24,6 +24,8 @@ public class MessageEntity{
     @Id
     private String messageId;
 
+    private String previousMessageId;
+
     @ManyToOne
     @JoinColumn(name="receiver_id")
     private PatientEntity recPatientEntity;

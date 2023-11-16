@@ -6,7 +6,9 @@ import com.example.demo.exception.ItemNotFoundException;
 
 public interface MeetingService {
     MeetingEntity getMeetingByMeetingId(String meetingId) throws ItemNotFoundException;
+    
     void deleteByMeetingId(String meetingId) throws ItemNotFoundException;
+
     MeetingEntity saveMeeting(MeetingEntity meetingEntity) throws InvalidFormatException;
 
 }

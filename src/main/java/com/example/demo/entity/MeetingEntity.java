@@ -24,7 +24,7 @@ public class MeetingEntity {
     private String meetingId;
 
     private String meetingLink;
-
+    
     @ManyToOne
     @JoinColumn(name="patient_id")
     private PatientEntity recPatientEntity;

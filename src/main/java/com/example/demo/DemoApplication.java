@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @SpringBootApplication
 public class DemoApplication {
 
+	//need to create a bot user on running
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 	}

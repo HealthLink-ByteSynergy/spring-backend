@@ -35,7 +35,11 @@ public class SummariesServiceImpl implements SummariesService{
         final String uri="https://api.cohere.ai/v1/summarize";
         final String apiKey="Bearer "+ "0Nr94xvToSWRj7hM54yr8Y1uxz1HCMw8q8Bxh1Uo";
 
+        //need to add minimum length check;
         try{
+            if(message.length()<300){
+                return message;
+            }
             RestTemplate restTemplate=new RestTemplate();
             HttpHeaders headers=new HttpHeaders();
             headers.set("Authorization",apiKey);
@@ -90,7 +94,7 @@ public class SummariesServiceImpl implements SummariesService{
     }
 
     @Override
-    public List<SummariesEntity> findAllByPatiendId(String patientId) throws ItemNotFoundException {
+    public List<SummariesEntity> findAllByPatientId(String patientId) throws ItemNotFoundException {
         try{
             PatientEntity patientEntity=new PatientEntity();
             patientEntity.setPatientId(patientId);

@@ -6,5 +6,6 @@ import com.example.demo.exception.ItemNotFoundException;
 
 public interface PrescriptionService {
     PrescriptionEntity getByPrescriptionId(String prescriptionId) throws ItemNotFoundException; 
+    
     PrescriptionEntity savePrescription(PrescriptionEntity prescriptionEntity) throws InvalidFormatException;
 }
