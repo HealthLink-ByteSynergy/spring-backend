@@ -13,5 +13,5 @@ import com.example.demo.entity.UserEntity;
 @Repository
 public interface DoctorRepository extends JpaRepository<DoctorEntity,String>{
     Optional<DoctorEntity> findByUserEntity(UserEntity userEntity);
-    List<DoctorEntity> findAllBySpecializationAndIsAvailable(String specialization, IsAvailable isAvailable);
+    List<DoctorEntity> findBySpecializationContainsAndIsAvailable(String specialization,IsAvailable isAvailable);
 }

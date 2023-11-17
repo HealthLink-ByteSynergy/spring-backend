@@ -63,7 +63,7 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public List<DoctorEntity> getDetailsBySpecialization(String Specilization) throws ItemNotFoundException {
         try{
-            return doctorRepository.findAllBySpecializationAndIsAvailable(Specilization,IsAvailable.AVAILABLE);
+            return doctorRepository.findBySpecializationContainsAndIsAvailable(Specilization,IsAvailable.AVAILABLE);
         }
         catch(Exception ex){
             throw new ItemNotFoundException("No doctors with the given specialization are available");

@@ -29,6 +29,8 @@ public class PatientEntity {
 
     private String age;
 
+    private String name;
+    
     private String gender;
 
     private String phoneNumber;

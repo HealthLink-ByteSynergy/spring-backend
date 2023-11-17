@@ -44,7 +44,6 @@ public class UserController {
     public String login(@RequestBody UserEntity user, HttpServletResponse response) throws UserWrongPasswordException, UserNotFoundException {
         String token = userService.login(user);
         if (token != null) {
-            // TODO: set cookie
             Number maxAge = 1000 * 60 * 60 * 10; // 10 hour
             Cookie cookie = new Cookie("jwt", token);
             cookie.setHttpOnly(true);
