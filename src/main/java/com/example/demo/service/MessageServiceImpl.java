@@ -100,8 +100,11 @@ public class MessageServiceImpl implements MessageService {
             String newMessage=messageEntity.getText();
 
             if(previousId!=null){
-                MessageEntity prevMessage=getMessageById(previousId);
-                newMessage=newMessage+prevMessage.getSummary(); 
+                Optional<MessageEntity> mess=messageRepository.findById(previousId);
+                if(mess.isPresent()){
+                    MessageEntity prevMessage=mess.get();
+                    newMessage=newMessage+prevMessage.getSummary(); 
+                }
             }
 
             //Saving the previous message

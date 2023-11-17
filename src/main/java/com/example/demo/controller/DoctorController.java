@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.DoctorEntity;
@@ -24,7 +25,7 @@ public class DoctorController {
     private final DoctorService doctorService;
 
     @GetMapping("/id")
-    public DoctorEntity getById(@RequestBody String DoctorId) throws ItemNotFoundException{
+    public DoctorEntity getById(@RequestParam String DoctorId) throws ItemNotFoundException{
         return doctorService.getBydoctorId(DoctorId);
     }
 
@@ -40,6 +41,7 @@ public class DoctorController {
 
     @PutMapping("/update")
     public DoctorEntity updateDetails(DoctorEntity doctorEntity) throws ItemNotFoundException{
+        //doctorId and userId
         return doctorService.updateDoctorAvailability(doctorEntity.getDoctorId(), doctorEntity.getIsAvailable());
     }
 }

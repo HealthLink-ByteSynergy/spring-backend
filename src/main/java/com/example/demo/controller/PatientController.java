@@ -7,12 +7,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.PatientEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.service.PatientService;
+
+import jakarta.transaction.Transactional;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +28,13 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping("/id")
-    public PatientEntity getPatient(@RequestBody String patientId) throws ItemNotFoundException{
+    public PatientEntity getPatient(@RequestParam String patientId) throws ItemNotFoundException{
         return patientService.getByPatientId(patientId);
     }
 
     @GetMapping("/getByUserId")
-    public List<PatientEntity> getByUser(@RequestBody String patientId) throws ItemNotFoundException{
-        return patientService.getByUserId(patientId);
+    public List<PatientEntity> getByUser(@RequestParam String userId) throws ItemNotFoundException{
+        return patientService.getByUserId(userId);
     }
     
     @PostMapping("/save")
@@ -39,8 +42,9 @@ public class PatientController {
         return patientService.savePatientDetails(patientEntity);
     }
 
+    @Transactional
     @DeleteMapping("/delete")
-    public void DeletePatient(@RequestBody String patientId) throws ItemNotFoundException{
+    public void DeletePatient(@RequestParam String patientId) throws ItemNotFoundException{
         patientService.deleteByPatientId(patientId);
     }
 

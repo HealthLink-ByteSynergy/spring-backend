@@ -40,6 +40,7 @@ public class MessageController {
 
     @PostMapping("/saveUsertoBot")
     public MessageEntity saveUserToBot(@RequestBody MessageEntity messageEntity) throws ItemNotFoundException, InvalidFormatException{
+        System.out.println(messageEntity.toString());
         return messageService.saveUserToBotMessage(messageEntity);
     }
 

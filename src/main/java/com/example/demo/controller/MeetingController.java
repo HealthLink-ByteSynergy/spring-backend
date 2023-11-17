@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.MeetingEntity;
@@ -22,7 +23,7 @@ public class MeetingController {
     private final MeetingService meetingService;
 
     @GetMapping("/id")
-    public MeetingEntity getMeeting(@RequestBody String meetingId) throws ItemNotFoundException{
+    public MeetingEntity getMeeting(@RequestParam String meetingId) throws ItemNotFoundException{
         return meetingService.getMeetingByMeetingId(meetingId);
     }
 

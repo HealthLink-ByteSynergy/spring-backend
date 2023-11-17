@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.SummariesEntity;
@@ -33,17 +34,17 @@ public class SummariesController {
     }
 
     @GetMapping("/id")
-    public SummariesEntity getSummary(@RequestBody String summaryId) throws ItemNotFoundException{
+    public SummariesEntity getSummary(@RequestParam String summaryId) throws ItemNotFoundException{
         return summariesService.getSummaryById(summaryId);
     }
 
     @GetMapping("/getAllPatientSummaries")
-    public List<SummariesEntity> findAllPatients(@RequestBody String patientId) throws ItemNotFoundException{
+    public List<SummariesEntity> findAllPatients(@RequestParam String patientId) throws ItemNotFoundException{
         return summariesService.findAllByPatientId(patientId);
     }
 
     @GetMapping("/getAllDoctorSummaries")
-    public List<SummariesEntity> findAllDoctors(@RequestBody String doctorId) throws ItemNotFoundException{
+    public List<SummariesEntity> findAllDoctors(@RequestParam String doctorId) throws ItemNotFoundException{
         return summariesService.findAllByDoctorId(doctorId);
     }
 }

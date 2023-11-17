@@ -12,12 +12,14 @@ import com.example.demo.entity.UserEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.repository.PatientRepository;
+import com.example.demo.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
 public class PatientServiceImpl implements PatientService{
     
     private final PatientRepository patientRepository;
+    private final UserRepository userRepository;
 
     @Override
     public PatientEntity getByPatientId(String patientId) throws ItemNotFoundException {
@@ -49,6 +51,8 @@ public class PatientServiceImpl implements PatientService{
     public PatientEntity savePatientDetails(PatientEntity patientEntity) throws InvalidFormatException {
         try{
             patientEntity.setPatientId(UUIDService.getUUID());
+            UserEntity userEntity=userRepository.findById(patientEntity.getUserEntity().getId()).get();
+            patientEntity.setUserEntity(userEntity);
             return patientRepository.save(patientEntity);
         }
         catch(Exception ex){
@@ -70,22 +74,17 @@ public class PatientServiceImpl implements PatientService{
     @Override
     public PatientEntity updatePatientDetails(PatientEntity patientEntity) throws ItemNotFoundException {
         try{//need to add more
+            //pass both patient and userId;
             Optional<PatientEntity> item=patientRepository.findById(patientEntity.getPatientId());
             if(item.isPresent()){
                 PatientEntity currentpatientEntity=item.get();
-                // if(patientEntity.getAge()!=null) currentpatientEntity.setAge(patientEntity.getAge());
-                // if(patientEntity.getHeight()!=null) currentpatientEntity.setHeight(patientEntity.getHeight());
-                // if(patientEntity.getWeight()!=null) currentpatientEntity.setWeight(patientEntity.getWeight());
-                // if(patientEntity.getGender()!=null) currentpatientEntity.setGender(patientEntity.getGender());
-                // if(patientEntity.getMedicalCondition()!=null) currentpatientEntity.setMedicalCondition(patientEntity.getMedicalCondition());
-                // if(patientEntity.getName())
                 patientEntity.setPatientId(currentpatientEntity.getPatientId());
                 return patientRepository.save(patientEntity);
             }
             else throw new ItemNotFoundException("The patient with the corresponding patientId doesn't exist!!");
         }
         catch(Exception ex){
-            throw new ItemNotFoundException("The doctor with the corresponding doctorId doesn't exist!!");
+            throw new ItemNotFoundException("The patient with the corresponding patientId doesn't exist!!");
         }
     }
 

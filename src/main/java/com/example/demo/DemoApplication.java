@@ -46,7 +46,7 @@ public class DemoApplication implements CommandLineRunner{
     public void run(String... args) throws UserDuplicateEmailException {
 		try{
 			UserEntity userEntity=new UserEntity();
-			userEntity.setEmail("healthlink@gmail.com");
+			userEntity.setEmail("health-link@gmail.com");
 			userEntity.setId(UUIDService.getUUID());
 			userEntity.setUsername("bot");
 			userEntity.setRole(Role.BOT);
