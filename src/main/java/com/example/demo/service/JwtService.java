@@ -81,14 +81,23 @@ public class JwtService {
     }
 
     public String getJwtFromCookie(HttpServletRequest request) {
+        // String jwt = null;
+        // if (request.getCookies() != null) {
+        //     for (var cookie : request.getCookies()) {
+        //         if (cookie.getName().equals("jwt")) {
+        //             jwt = cookie.getValue();
+        //             break;
+        //         }
+        //     }
+        // }
         String jwt = null;
-        if (request.getCookies() != null) {
-            for (var cookie : request.getCookies()) {
-                if (cookie.getName().equals("jwt")) {
-                    jwt = cookie.getValue();
-                    break;
-                }
-            }
+        String header=request.getHeader("Authorization");
+        if(header!=null){
+            String[] token=header.split(" ");
+            if(token.length>1  && !token[1].equals("null")){
+                jwt=token[1];
+            } 
+            System.out.println(jwt);
         }
         return jwt;
     }
