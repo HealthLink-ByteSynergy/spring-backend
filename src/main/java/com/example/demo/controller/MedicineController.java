@@ -11,6 +11,7 @@ import com.example.demo.entity.MedicineEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.service.MedicineService;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,12 +23,12 @@ public class MedicineController {
     private final MedicineService medicineService;
 
     @GetMapping("/getMedicines")
-    public List<MedicineEntity> getMedicines(String medicineId) throws ItemNotFoundException{
+    public List<MedicineEntity> getMedicines(@RequestBody String medicineId) throws ItemNotFoundException{
         return medicineService.getMedicinesList(medicineId);
     }
 
     @PostMapping("/save")
-    public MedicineEntity saveMedicine(MedicineEntity medicineEntity) throws InvalidFormatException{
+    public MedicineEntity saveMedicine(@RequestBody MedicineEntity medicineEntity) throws InvalidFormatException{
         return medicineService.saveMedicine(medicineEntity);
     }
 }
