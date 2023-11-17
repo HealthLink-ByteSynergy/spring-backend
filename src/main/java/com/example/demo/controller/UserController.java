@@ -36,8 +36,8 @@ public class UserController {
     }
 
     @PostMapping("/getUserDetails")
-    public UserEntity getUserDetails(@RequestBody UserEntity user) throws UserNotFoundException{
-        return userService.getUserDetails(user);
+    public UserEntity getUserDetails(@RequestBody String token) throws UserNotFoundException{
+        return userService.getUserDetails(token);
     }
 
     @PostMapping("/login")

@@ -7,6 +7,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -88,13 +90,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity getUserDetails(UserEntity user) throws UserNotFoundException {
-        // need to change this
-        Optional<UserEntity> newUser=userRepository.findByEmail(user.getEmail());
-        if(newUser.isPresent()){
-            return newUser.get();
+    public UserEntity getUserDetails(String token) throws UserNotFoundException {
+        String userEmailFromCookie = jwtService.extractUserEmail(token);
+        Optional<UserEntity> user=userRepository.findByEmail(userEmailFromCookie);
+        if(user.isPresent()){
+            return user.get();
         }
-        else throw new UserNotFoundException("This User doesn't exist"); 
+        else throw new UserNotFoundException("User doesn't Exist");
     }
 
     @Override

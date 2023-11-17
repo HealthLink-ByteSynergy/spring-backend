@@ -10,7 +10,7 @@ import com.example.demo.exception.UserWrongPasswordException;
 public interface UserService {
     String signup(UserEntity user) throws UserDuplicateEmailException, InvalidFormatException;
     String doctorSignup(CustomEntity customuser) throws UserDuplicateEmailException, InvalidFormatException;
-    UserEntity getUserDetails(UserEntity user) throws UserNotFoundException;
+    UserEntity getUserDetails(String token) throws UserNotFoundException;
     String login(UserEntity user) throws UserNotFoundException, UserWrongPasswordException;
 }
  
