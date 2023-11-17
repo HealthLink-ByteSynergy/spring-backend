@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.dao.DataIntegrityViolationException;
@@ -9,8 +10,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.entity.CustomEntity;
+import com.example.demo.entity.DoctorEntity;
+import com.example.demo.entity.DoctorModelEntity;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.UserEntity;
+import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.UserDuplicateEmailException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.exception.UserWrongPasswordException;
@@ -26,12 +31,26 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final DoctorService doctorService;
 
     @Override
-    public String signup(UserEntity user) throws UserDuplicateEmailException {
+    public String signup(UserEntity user) throws UserDuplicateEmailException, InvalidFormatException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         String userId = UUIDService.getUUID();
-        UserEntity userEntity = UserEntity
+        Role role=user.getRole();
+        UserEntity userEntity=new UserEntity();
+        if(role!=null){
+            userEntity=UserEntity
+                .builder()
+                .id(userId)
+                .username(user.getUser())
+                .email(user.getEmail())
+                .password(encodedPassword)
+                .role(role)
+                .build();
+        }
+        else {
+            userEntity=UserEntity
                 .builder()
                 .id(userId)
                 .username(user.getUser())
@@ -39,6 +58,8 @@ public class UserServiceImpl implements UserService {
                 .password(encodedPassword)
                 .role(Role.USER)
                 .build();
+        }
+
         try{
             userRepository.save(userEntity);
         } catch (DataIntegrityViolationException e) {
@@ -74,5 +95,46 @@ public class UserServiceImpl implements UserService {
             return newUser.get();
         }
         else throw new UserNotFoundException("This User doesn't exist"); 
+    }
+
+    @Override
+    public String doctorSignup(CustomEntity customuser) throws UserDuplicateEmailException, InvalidFormatException {
+        UserEntity user=customuser.getUserEntity();
+        DoctorModelEntity doctor=customuser.getDoctorEntity();
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        String userId = UUIDService.getUUID();
+        UserEntity userEntity=new UserEntity();
+        
+        userEntity=UserEntity
+            .builder()
+            .id(userId)
+            .username(user.getUser())
+            .email(user.getEmail())
+            .password(encodedPassword)
+            .role(Role.DOCTOR)
+            .build();
+
+        try{
+            UserEntity newUser=userRepository.save(userEntity);
+
+            List<String> specializations=doctor.getSpecialization();
+            String spec="";
+            for(int i=0;i<specializations.size();i++){
+                spec+=specializations.get(i)+",";
+            }
+
+            DoctorEntity newDoctor=new DoctorEntity();
+            newDoctor.setDoctorId(UUIDService.getUUID());
+            newDoctor.setIsAvailable(doctor.getIsAvailable());
+            newDoctor.setLicenseNumber(doctor.getLicenseNumber());
+            newDoctor.setUserEntity(newUser);    
+            newDoctor.setSpecialization(spec);
+                
+            doctorService.saveDoctorDetails(newDoctor);
+
+        } catch (DataIntegrityViolationException e) {
+            throw new UserDuplicateEmailException("Email already exists");
+        }
+        return jwtService.generateToken(userEntity);
     }
 }

@@ -16,4 +16,5 @@ public interface PatientService {
     void deleteByPatientId(String patientId) throws ItemNotFoundException;
     
     PatientEntity updatePatientDetails(PatientEntity patientEntity) throws ItemNotFoundException; //save
+
 }

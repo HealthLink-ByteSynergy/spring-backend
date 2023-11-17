@@ -87,4 +87,5 @@ public class PatientServiceImpl implements PatientService{
             throw new ItemNotFoundException("The doctor with the corresponding doctorId doesn't exist!!");
         }
     }
+
 }

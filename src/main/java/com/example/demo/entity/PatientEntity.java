@@ -31,6 +31,8 @@ public class PatientEntity {
 
     private String gender;
 
+    private String phoneNumber;
+
     private String height;
 
     private String weight;
@@ -49,4 +51,18 @@ public class PatientEntity {
 
     private String drugsUseFrequency;
     
+    @Override
+    public String toString(){
+        String output="The Patient Details are: \nAge: "+this.getAge()
+        + "\nGender: " + this.getGender()
+        + "\nHeight: " + this.getHeight()
+        + "\nWeight: " + this.getWeight()
+        + "\nMedical Condition: "+ this.getMedicalCondition()
+        + "\nSurgeries: " + this.getSurgeries()
+        + "\nSmoking Frequency: " + this.getSmokingFrequency()
+        + "\nDrinking Frequency: "+ this.getDrinkingFrequency()
+        + "\nDrug Use: " + this.getDrugsUseFrequency();
+        
+        return output;
+    }
 }

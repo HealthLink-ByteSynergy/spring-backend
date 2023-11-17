@@ -15,9 +15,11 @@ import org.springframework.web.client.RestTemplate;
 import com.example.demo.entity.Generate;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.MessageType;
+import com.example.demo.entity.PatientEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.repository.MessageRepository;
+import com.example.demo.repository.PatientRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +29,8 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
     private final SummariesService summariesService;
+
+    private final PatientRepository patientRepository;
 
     @Override
     public MessageEntity getMessageById(String messageId) throws ItemNotFoundException {
@@ -93,11 +97,12 @@ public class MessageServiceImpl implements MessageService {
             messageEntity.setDate(new Date());
             messageEntity.setMessageId(UUIDService.getUUID());
             String previousId=messageEntity.getMessageId();
+            // Add patient details too
             String newMessage=messageEntity.getText();
 
             if(previousId!=null){
                 MessageEntity prevMessage=getMessageById(previousId);
-                newMessage=newMessage+prevMessage.getSummary();
+                newMessage=newMessage+prevMessage.getSummary(); 
             }
 
             //Saving the previous message
@@ -105,6 +110,13 @@ public class MessageServiceImpl implements MessageService {
                 messageEntity.setSummary(newMessage);
             }
             else messageEntity.setSummary(summariesService.generateTempChatSummary(newMessage));
+            
+            //adding patient details
+            
+            String patientDetails=messageEntity.getSenPatientEntity().toString();
+
+            newMessage+=patientDetails;
+
             MessageEntity currentEntity=messageRepository.save(messageEntity); //saving current message
             String botResponse=generateMessage(newMessage); //response by bot
             currentEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());

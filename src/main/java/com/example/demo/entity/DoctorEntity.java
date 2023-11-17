@@ -30,4 +30,5 @@ public class DoctorEntity {
 
     private IsAvailable isAvailable;
 
+    private String licenseNumber;
 }

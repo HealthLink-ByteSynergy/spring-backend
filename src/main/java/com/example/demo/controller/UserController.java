@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.CustomEntity;
 import com.example.demo.entity.UserEntity;
+import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.UserDuplicateEmailException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.exception.UserWrongPasswordException;
@@ -24,8 +26,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public String signup(@RequestBody UserEntity user) throws UserDuplicateEmailException {
+    public String signup(@RequestBody UserEntity user) throws UserDuplicateEmailException, InvalidFormatException {
         return userService.signup(user);
+    }
+
+    @PostMapping("/doctorsignup")
+    public String doctorSignup(@RequestBody CustomEntity user) throws UserDuplicateEmailException, InvalidFormatException {
+        return userService.doctorSignup(user);
     }
 
     @PostMapping("/getUserDetails")
