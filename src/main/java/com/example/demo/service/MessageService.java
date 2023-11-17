@@ -21,6 +21,8 @@ public interface MessageService {
 
     //need a function that accounts separately for recommending doctors from our database;
     
+    MessageEntity recommendSpecialists(MessageEntity messageEntity) throws InvalidFormatException, ItemNotFoundException;
+
     MessageEntity saveMeetingChat(MessageEntity messageEntity) throws ItemNotFoundException;
 
     void deleteByMessageId(String messageId) throws ItemNotFoundException;

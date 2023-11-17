@@ -73,13 +73,14 @@ public class PatientServiceImpl implements PatientService{
             Optional<PatientEntity> item=patientRepository.findById(patientEntity.getPatientId());
             if(item.isPresent()){
                 PatientEntity currentpatientEntity=item.get();
-                if(patientEntity.getAge()!=null) currentpatientEntity.setAge(patientEntity.getAge());
-                if(patientEntity.getHeight()!=null) currentpatientEntity.setHeight(patientEntity.getHeight());
-                if(patientEntity.getWeight()!=null) currentpatientEntity.setWeight(patientEntity.getWeight());
-                if(patientEntity.getGender()!=null) currentpatientEntity.setGender(patientEntity.getGender());
-                if(patientEntity.getMedicalCondition()!=null) currentpatientEntity.setMedicalCondition(patientEntity.getMedicalCondition());
-
-                return patientRepository.save(currentpatientEntity);
+                // if(patientEntity.getAge()!=null) currentpatientEntity.setAge(patientEntity.getAge());
+                // if(patientEntity.getHeight()!=null) currentpatientEntity.setHeight(patientEntity.getHeight());
+                // if(patientEntity.getWeight()!=null) currentpatientEntity.setWeight(patientEntity.getWeight());
+                // if(patientEntity.getGender()!=null) currentpatientEntity.setGender(patientEntity.getGender());
+                // if(patientEntity.getMedicalCondition()!=null) currentpatientEntity.setMedicalCondition(patientEntity.getMedicalCondition());
+                // if(patientEntity.getName())
+                patientEntity.setPatientId(currentpatientEntity.getPatientId());
+                return patientRepository.save(patientEntity);
             }
             else throw new ItemNotFoundException("The patient with the corresponding patientId doesn't exist!!");
         }

@@ -15,11 +15,9 @@ import org.springframework.web.client.RestTemplate;
 import com.example.demo.entity.Generate;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.MessageType;
-import com.example.demo.entity.PatientEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.repository.MessageRepository;
-import com.example.demo.repository.PatientRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,8 +27,6 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
     private final SummariesService summariesService;
-
-    private final PatientRepository patientRepository;
 
     @Override
     public MessageEntity getMessageById(String messageId) throws ItemNotFoundException {
@@ -96,7 +92,7 @@ public class MessageServiceImpl implements MessageService {
             messageEntity.setMessageType(MessageType.CHAT);
             messageEntity.setDate(new Date());
             messageEntity.setMessageId(UUIDService.getUUID());
-            String previousId=messageEntity.getMessageId();
+            String previousId=messageEntity.getPreviousMessageId();
             // Add patient details too
             String newMessage=messageEntity.getText();
 
@@ -115,7 +111,7 @@ public class MessageServiceImpl implements MessageService {
             
             String patientDetails=messageEntity.getSenPatientEntity().toString();
 
-            newMessage+=patientDetails;
+            newMessage=patientDetails+"\n"+newMessage;
 
             MessageEntity currentEntity=messageRepository.save(messageEntity); //saving current message
             String botResponse=generateMessage(newMessage); //response by bot
@@ -131,6 +127,13 @@ public class MessageServiceImpl implements MessageService {
             throw new InvalidFormatException(ex.getMessage());
         }
 
+    }
+
+    @Override
+    public MessageEntity recommendSpecialists(MessageEntity messageEntity)
+            throws InvalidFormatException, ItemNotFoundException {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'recommendSpecialists'");
     }
 
     @Override
