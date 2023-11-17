@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.Generate;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.MessageType;
@@ -27,6 +29,7 @@ public class MessageServiceImpl implements MessageService {
 
     private final MessageRepository messageRepository;
     private final SummariesService summariesService;
+    private final DoctorService doctorService;
 
     @Override
     public MessageEntity getMessageById(String messageId) throws ItemNotFoundException {
@@ -114,12 +117,15 @@ public class MessageServiceImpl implements MessageService {
             newMessage=patientDetails+"\n"+newMessage;
 
             MessageEntity currentEntity=messageRepository.save(messageEntity); //saving current message
-            String botResponse=generateMessage(newMessage); //response by bot
+            String botResponse=generateMessage(newMessage); 
+            //response by bot
+            currentEntity.setPreviousMessageId(currentEntity.getMessageId());
+            currentEntity.setMessageId(UUIDService.getUUID());
             currentEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());
             currentEntity.setSenPatientEntity(messageEntity.getRecPatientEntity());
-            currentEntity.setText(summariesService.generateTempChatSummary(botResponse));
+            currentEntity.setText(botResponse);
             currentEntity.setDate(new Date());
-            currentEntity.setSummary(" ");
+            currentEntity.setSummary(summariesService.generateTempChatSummary(botResponse));
             
             return messageRepository.save(currentEntity);
         }
@@ -132,8 +138,60 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public MessageEntity recommendSpecialists(MessageEntity messageEntity)
             throws InvalidFormatException, ItemNotFoundException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'recommendSpecialists'");
+        try{
+            //frontend needs to send the previous message id;
+            String previousId=messageEntity.getPreviousMessageId();
+            // Add patient details too
+            String newMessage=" ";
+
+            if(previousId!=null){
+                MessageEntity prevMessage=getMessageById(previousId);
+                newMessage=newMessage+prevMessage.getSummary(); 
+            }
+            
+            //adding patient details
+            
+            String patientDetails=messageEntity.getSenPatientEntity().toString();
+
+            newMessage=patientDetails+"\n"+newMessage;
+
+            String finalMessage=newMessage+"\nIs this health problem severe enough that it requires me to consult a doctor? Give a one word answer Yes or No";
+
+            String botResponse=generateMessage(finalMessage); //response by bot
+
+            if(botResponse.contains("YES")){
+                String giveSpecialists=newMessage+"\nSuggest some specialists in the decreasing order of relevance with separation by commas and in one sentence. Only give the specialization, no description of the specialization.";
+                botResponse=generateMessage(giveSpecialists);
+
+                List<String> Specialists=Arrays.asList(botResponse.split(","));
+                for(int i=0;i<Specialists.size();i++){
+                    String spec=Specialists.get(i);
+                    List<DoctorEntity> doctors=doctorService.getDetailsBySpecialization(spec);
+                    botResponse+="\n"+spec+": \n";
+                    for(int j=0;j<doctors.size();j++){
+                        botResponse+=doctors.get(j).toString()+"\n";
+                    }
+                }
+            }
+            else botResponse+=" This health problem is not that severe.";
+
+            MessageEntity currentEntity=new MessageEntity();
+
+            currentEntity.setMessageType(MessageType.CHAT);
+            currentEntity.setMessageId(UUIDService.getUUID());
+            currentEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());
+            currentEntity.setSenPatientEntity(messageEntity.getRecPatientEntity());
+            currentEntity.setText(summariesService.generateTempChatSummary(botResponse));
+            currentEntity.setDate(new Date());
+            currentEntity.setPreviousMessageId(messageEntity.getPreviousMessageId());
+            currentEntity.setSummary(" ");
+            
+            return messageRepository.save(currentEntity);
+        }
+        catch(Exception ex){
+            throw new InvalidFormatException(ex.getMessage());
+        }
+
     }
 
     @Override
