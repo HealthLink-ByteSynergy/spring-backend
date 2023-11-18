@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -17,9 +18,11 @@ import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.Generate;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.MessageType;
+import com.example.demo.entity.PatientEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.repository.MessageRepository;
+import com.example.demo.repository.PatientRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +33,7 @@ public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final SummariesService summariesService;
     private final DoctorService doctorService;
+    private final PatientRepository patientRepository;
 
     @Override
     public MessageEntity getMessageById(String messageId) throws ItemNotFoundException {
@@ -80,7 +84,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<MessageEntity> getAllReceiverSender(MessageEntity messageEntity) throws ItemNotFoundException {
         try{
-            return messageRepository.findAllByRecPatientEntityAndSenPatientEntityOrderByDateAsc(messageEntity.getRecPatientEntity(), messageEntity.getSenPatientEntity());
+            List<PatientEntity> ids=new ArrayList<>();
+            ids.add(messageEntity.getRecPatientEntity());
+            ids.add(messageEntity.getSenPatientEntity());
+            // return messageRepository.findAllByRecPatientEntityAndSenPatientEntityOrderByDateAsc(messageEntity.getRecPatientEntity(), messageEntity.getSenPatientEntity());
+            return messageRepository.findByRecPatientEntityInAndSenPatientEntityInOrderByDateAsc(ids, ids);
         }
         catch(Exception ex){
             throw new ItemNotFoundException(ex.getMessage());
@@ -117,20 +125,23 @@ public class MessageServiceImpl implements MessageService {
             
             String patientDetails=messageEntity.getSenPatientEntity().toString();
 
-            newMessage=patientDetails+"\n"+newMessage;
+            newMessage=patientDetails+"\n"+newMessage+"\nGive a response with word limit of 500";
 
             MessageEntity currentEntity=messageRepository.save(messageEntity); //saving current message
+            MessageEntity newEntity=new MessageEntity();
+
             String botResponse=generateMessage(newMessage); 
             //response by bot
-            currentEntity.setPreviousMessageId(currentEntity.getMessageId());
-            currentEntity.setMessageId(UUIDService.getUUID());
-            currentEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());
-            currentEntity.setSenPatientEntity(messageEntity.getRecPatientEntity());
-            currentEntity.setText(botResponse);
-            currentEntity.setDate(new Date());
-            currentEntity.setSummary(summariesService.generateTempChatSummary(botResponse));
+            newEntity.setPreviousMessageId(currentEntity.getMessageId());
+            newEntity.setMessageId(UUIDService.getUUID());
+            newEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());
+            newEntity.setSenPatientEntity(messageEntity.getRecPatientEntity());
+            newEntity.setText(botResponse);
+            newEntity.setDate(new Date());
+            newEntity.setMessageType(MessageType.CHAT);
+            newEntity.setSummary(summariesService.generateTempChatSummary(newMessage+botResponse));
             
-            return messageRepository.save(currentEntity);
+            return messageRepository.save(newEntity);
         }
         catch(Exception ex){
             throw new InvalidFormatException(ex.getMessage());
@@ -154,17 +165,23 @@ public class MessageServiceImpl implements MessageService {
             
             //adding patient details
             
-            String patientDetails=messageEntity.getSenPatientEntity().toString();
+            String patientDetails="";
+            PatientEntity ps=messageEntity.getSenPatientEntity();
+            Optional<PatientEntity> patientEntity=patientRepository.findById(ps.getPatientId());
+            if(patientEntity.isPresent()) patientDetails=patientEntity.get().toString();
 
             newMessage=patientDetails+"\n"+newMessage;
 
-            String finalMessage=newMessage+"\nIs this health problem severe enough that it requires me to consult a doctor? Give a one word answer Yes or No";
+            String finalMessage=newMessage+"\nIs this health problem severe enough that it requires me to consult a doctor. You must give a 1 word answer";
 
             String botResponse=generateMessage(finalMessage); //response by bot
+                        
+            if(botResponse.contains("Yes")){
 
-            if(botResponse.contains("YES")){
-                String giveSpecialists=newMessage+"\nSuggest some specialists in the decreasing order of relevance with separation by commas and in one sentence. Only give the specialization, no description of the specialization.";
+                String giveSpecialists=newMessage+"\nSuggest some specialists in the decreasing order of relevance with separation by commas and in one sentence. Only give the specialization, no description of the specialization and no additional comments will be entertained";
                 botResponse=generateMessage(giveSpecialists);
+
+                System.out.println(botResponse + "hi");
 
                 List<String> Specialists=Arrays.asList(botResponse.split(","));
                 for(int i=0;i<Specialists.size();i++){
@@ -176,6 +193,7 @@ public class MessageServiceImpl implements MessageService {
                     }
                 }
             }
+
             else botResponse+=" This health problem is not that severe.";
 
             MessageEntity currentEntity=new MessageEntity();
@@ -184,7 +202,7 @@ public class MessageServiceImpl implements MessageService {
             currentEntity.setMessageId(UUIDService.getUUID());
             currentEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());
             currentEntity.setSenPatientEntity(messageEntity.getRecPatientEntity());
-            currentEntity.setText(summariesService.generateTempChatSummary(botResponse));
+            currentEntity.setText(botResponse);
             currentEntity.setDate(new Date());
             currentEntity.setPreviousMessageId(messageEntity.getPreviousMessageId());
             currentEntity.setSummary(" ");
@@ -249,7 +267,11 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public void deleteAllByRecIdAndSendId(MessageEntity messageEntity) throws ItemNotFoundException {
         try{
-            messageRepository.deleteAllByRecPatientEntityAndSenPatientEntity(messageEntity.getRecPatientEntity(),messageEntity.getSenPatientEntity());
+            List<PatientEntity> ids=new ArrayList<>();
+            ids.add(messageEntity.getRecPatientEntity());
+            ids.add(messageEntity.getSenPatientEntity());
+            // messageRepository.deleteAllByRecPatientEntityAndSenPatientEntity(messageEntity.getRecPatientEntity(),messageEntity.getSenPatientEntity());
+            messageRepository.deleteByRecPatientEntityInAndSenPatientEntityIn(ids, ids);
         }
         catch(Exception ex){
             throw new ItemNotFoundException(ex.getMessage());

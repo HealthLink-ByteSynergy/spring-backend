@@ -34,14 +34,14 @@ public class MessageEntity{
     @JoinColumn(name="sender_id")
     private PatientEntity senPatientEntity;
 
-    @Column(length = 5000)
+    @Column(length = 7000)
     private String text;
 
     private MessageType messageType;
 
     private Date date;
 
-    @Column(length = 2000)
+    @Column(length = 4000)
     private String summary;
 
 }

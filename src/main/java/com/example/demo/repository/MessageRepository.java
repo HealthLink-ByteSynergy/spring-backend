@@ -12,6 +12,14 @@ import com.example.demo.entity.PatientEntity;
 public interface MessageRepository extends JpaRepository<MessageEntity,String>{
      List<MessageEntity> findAllByRecPatientEntity(PatientEntity recPatientEntity);
      List<MessageEntity> findAllBySenPatientEntity(PatientEntity senPatientEntity);
-     List<MessageEntity> findAllByRecPatientEntityAndSenPatientEntityOrderByDateAsc(PatientEntity recPatientEntity,PatientEntity senPatientEntity);
+     List<MessageEntity> findAllByRecPatientEntityAndSenPatientEntityOrderByDateAsc
+     
+     (PatientEntity recPatientEntity,PatientEntity senPatientEntity);
+
+     List<MessageEntity> findByRecPatientEntityInAndSenPatientEntityInOrderByDateAsc(List<PatientEntity> recPatientEntities, List<PatientEntity> senPatientEntity);
+
+     List<MessageEntity> deleteByRecPatientEntityInAndSenPatientEntityIn
+     (List<PatientEntity> recPatientEntities, List<PatientEntity> senPatientEntity);
+
      String deleteAllByRecPatientEntityAndSenPatientEntity(PatientEntity recpPatientEntity,PatientEntity senPatientEntity);
 }

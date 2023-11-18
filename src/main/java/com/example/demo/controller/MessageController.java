@@ -34,7 +34,12 @@ public class MessageController {
         return messageService.generateMessage(message);
     }
 
-    @GetMapping("/getAllMessages")
+    @PostMapping("/recommendSpecialist")
+    public MessageEntity recommend(@RequestBody MessageEntity messageEntity) throws InvalidFormatException, ItemNotFoundException{
+        return messageService.recommendSpecialists(messageEntity);
+    }
+
+    @PostMapping("/getAllMessages")
     public List<MessageEntity> getAllMessages(@RequestBody MessageEntity messageEntity) throws ItemNotFoundException{
         return messageService.getAllReceiverSender(messageEntity);
     }
