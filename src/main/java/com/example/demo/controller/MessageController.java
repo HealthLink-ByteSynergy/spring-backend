@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ public class MessageController {
     private final MessageService messageService;
 
     @GetMapping("/id")
-    public MessageEntity getMessage(@RequestBody String messageId) throws ItemNotFoundException{
+    public MessageEntity getMessage(@PathVariable String messageId) throws ItemNotFoundException{
         return messageService.getMessageById(messageId);
     }
 
@@ -55,7 +56,7 @@ public class MessageController {
     }
 
     @DeleteMapping("/delete")
-    public void deleteById(@RequestBody String messageId) throws ItemNotFoundException{
+    public void deleteById(@PathVariable String messageId) throws ItemNotFoundException{
         messageService.deleteByMessageId(messageId);
     }
 

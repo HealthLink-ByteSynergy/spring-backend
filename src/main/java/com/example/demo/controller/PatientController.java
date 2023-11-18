@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,12 +29,12 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping("/id")
-    public PatientEntity getPatient(@RequestParam String patientId) throws ItemNotFoundException{
+    public PatientEntity getPatient(@PathVariable String patientId) throws ItemNotFoundException{
         return patientService.getByPatientId(patientId);
     }
 
     @GetMapping("/getByUserId")
-    public List<PatientEntity> getByUser(@RequestParam String userId) throws ItemNotFoundException{
+    public List<PatientEntity> getByUser(@PathVariable String userId) throws ItemNotFoundException{
         return patientService.getByUserId(userId);
     }
     
@@ -44,7 +45,7 @@ public class PatientController {
 
     @Transactional
     @DeleteMapping("/delete")
-    public void DeletePatient(@RequestParam String patientId) throws ItemNotFoundException{
+    public void DeletePatient(@PathVariable String patientId) throws ItemNotFoundException{
         patientService.deleteByPatientId(patientId);
     }
 

@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,22 +26,22 @@ public class DoctorController {
     private final DoctorService doctorService;
 
     @GetMapping("/id")
-    public DoctorEntity getById(@RequestParam String DoctorId) throws ItemNotFoundException{
-        return doctorService.getBydoctorId(DoctorId);
+    public DoctorEntity getById(@PathVariable String doctorId) throws ItemNotFoundException{
+        return doctorService.getBydoctorId(doctorId);
     }
 
-    @GetMapping("/getBySpecialization")
+    @PostMapping("/getBySpecialization")
     public List<DoctorEntity> getBySpecialization(@RequestBody String specialization) throws ItemNotFoundException{
         return doctorService.getDetailsBySpecialization(specialization);
     }
 
     @PostMapping("/save")
-    public DoctorEntity saveDetails(DoctorEntity doctorEntity) throws InvalidFormatException{
+    public DoctorEntity saveDetails(@RequestBody DoctorEntity doctorEntity) throws InvalidFormatException{
         return doctorService.saveDoctorDetails(doctorEntity);
     }
 
     @PutMapping("/update")
-    public DoctorEntity updateDetails(DoctorEntity doctorEntity) throws ItemNotFoundException{
+    public DoctorEntity updateDetails(@RequestBody DoctorEntity doctorEntity) throws ItemNotFoundException{
         //doctorId and userId
         return doctorService.updateDoctorAvailability(doctorEntity.getDoctorId(), doctorEntity.getIsAvailable());
     }

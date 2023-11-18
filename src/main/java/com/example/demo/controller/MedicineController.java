@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ public class MedicineController {
     private final MedicineService medicineService;
 
     @GetMapping("/getMedicines")
-    public List<MedicineEntity> getMedicines(@RequestBody String medicineId) throws ItemNotFoundException{
+    public List<MedicineEntity> getMedicines(@PathVariable String medicineId) throws ItemNotFoundException{
         return medicineService.getMedicinesList(medicineId);
     }
 

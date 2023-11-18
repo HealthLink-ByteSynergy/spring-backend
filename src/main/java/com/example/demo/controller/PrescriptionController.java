@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +23,7 @@ public class PrescriptionController {
     private final PrescriptionService prescriptionService;
 
     @GetMapping("/id")
-    public PrescriptionEntity getByPrescription(@RequestParam String prescriptionId) throws ItemNotFoundException{
+    public PrescriptionEntity getByPrescription(@PathVariable String prescriptionId) throws ItemNotFoundException{
         return prescriptionService.getByPrescriptionId(prescriptionId);
     }
 

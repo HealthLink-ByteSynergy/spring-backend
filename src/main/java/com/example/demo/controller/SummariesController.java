@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,17 +35,17 @@ public class SummariesController {
     }
 
     @GetMapping("/id")
-    public SummariesEntity getSummary(@RequestParam String summaryId) throws ItemNotFoundException{
+    public SummariesEntity getSummary(@PathVariable String summaryId) throws ItemNotFoundException{
         return summariesService.getSummaryById(summaryId);
     }
 
     @GetMapping("/getAllPatientSummaries")
-    public List<SummariesEntity> findAllPatients(@RequestParam String patientId) throws ItemNotFoundException{
+    public List<SummariesEntity> findAllPatients(@PathVariable String patientId) throws ItemNotFoundException{
         return summariesService.findAllByPatientId(patientId);
     }
 
     @GetMapping("/getAllDoctorSummaries")
-    public List<SummariesEntity> findAllDoctors(@RequestParam String doctorId) throws ItemNotFoundException{
+    public List<SummariesEntity> findAllDoctors(@PathVariable String doctorId) throws ItemNotFoundException{
         return summariesService.findAllByDoctorId(doctorId);
     }
 }
