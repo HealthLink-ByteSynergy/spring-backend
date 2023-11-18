@@ -22,8 +22,8 @@ public class PrescriptionController {
     
     private final PrescriptionService prescriptionService;
 
-    @GetMapping("/id")
-    public PrescriptionEntity getByPrescription(@PathVariable String prescriptionId) throws ItemNotFoundException{
+    @GetMapping("/id/{prescriptionId}")
+    public PrescriptionEntity getByPrescription(@PathVariable("prescriptionId") String prescriptionId) throws ItemNotFoundException{
         return prescriptionService.getByPrescriptionId(prescriptionId);
     }
 

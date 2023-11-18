@@ -23,8 +23,8 @@ public class MedicineController {
     
     private final MedicineService medicineService;
 
-    @GetMapping("/getMedicines")
-    public List<MedicineEntity> getMedicines(@PathVariable String medicineId) throws ItemNotFoundException{
+    @GetMapping("/getMedicines/{medicineId}")
+    public List<MedicineEntity> getMedicines(@PathVariable("medicineId") String medicineId) throws ItemNotFoundException{
         return medicineService.getMedicinesList(medicineId);
     }
 

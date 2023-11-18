@@ -23,8 +23,8 @@ public class MeetingController {
     
     private final MeetingService meetingService;
 
-    @GetMapping("/id")
-    public MeetingEntity getMeeting(@PathVariable String meetingId) throws ItemNotFoundException{
+    @GetMapping("/id/{meetingId}")
+    public MeetingEntity getMeeting(@PathVariable("meetingId") String meetingId) throws ItemNotFoundException{
         return meetingService.getMeetingByMeetingId(meetingId);
     }
 
@@ -33,8 +33,8 @@ public class MeetingController {
         return meetingService.saveMeeting(meetingEntity);
     }
 
-    @DeleteMapping("/delete")
-    public void DeleteMeeting(@PathVariable String meetingId) throws ItemNotFoundException{
+    @DeleteMapping("/delete/{meetingId}")
+    public void DeleteMeeting(@PathVariable("meetingId") String meetingId) throws ItemNotFoundException{
         meetingService.deleteByMeetingId(meetingId);
     }
 }

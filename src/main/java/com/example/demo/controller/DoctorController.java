@@ -25,8 +25,8 @@ public class DoctorController {
     
     private final DoctorService doctorService;
 
-    @GetMapping("/id")
-    public DoctorEntity getById(@PathVariable String doctorId) throws ItemNotFoundException{
+    @GetMapping("/id/{doctorId}")
+    public DoctorEntity getById(@PathVariable("doctorId") String doctorId) throws ItemNotFoundException{
         return doctorService.getBydoctorId(doctorId);
     }
 

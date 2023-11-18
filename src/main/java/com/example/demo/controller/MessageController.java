@@ -24,8 +24,8 @@ public class MessageController {
 
     private final MessageService messageService;
 
-    @GetMapping("/id")
-    public MessageEntity getMessage(@PathVariable String messageId) throws ItemNotFoundException{
+    @GetMapping("/id/{messageId}")
+    public MessageEntity getMessage(@PathVariable("messageId") String messageId) throws ItemNotFoundException{
         return messageService.getMessageById(messageId);
     }
 
@@ -55,8 +55,8 @@ public class MessageController {
         return messageService.saveMeetingChat(messageEntity);
     }
 
-    @DeleteMapping("/delete")
-    public void deleteById(@PathVariable String messageId) throws ItemNotFoundException{
+    @DeleteMapping("/delete/{messageId}")
+    public void deleteById(@PathVariable("messageId") String messageId) throws ItemNotFoundException{
         messageService.deleteByMessageId(messageId);
     }
 

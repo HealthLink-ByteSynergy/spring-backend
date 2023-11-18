@@ -34,18 +34,18 @@ public class SummariesController {
         return summariesService.saveSummary(summariesEntity);
     }
 
-    @GetMapping("/id")
-    public SummariesEntity getSummary(@PathVariable String summaryId) throws ItemNotFoundException{
+    @GetMapping("/id/{summaryId}")
+    public SummariesEntity getSummary(@PathVariable("summaryId") String summaryId) throws ItemNotFoundException{
         return summariesService.getSummaryById(summaryId);
     }
 
-    @GetMapping("/getAllPatientSummaries")
-    public List<SummariesEntity> findAllPatients(@PathVariable String patientId) throws ItemNotFoundException{
+    @GetMapping("/getAllPatientSummaries/{patientId}")
+    public List<SummariesEntity> findAllPatients(@PathVariable("patientId") String patientId) throws ItemNotFoundException{
         return summariesService.findAllByPatientId(patientId);
     }
 
-    @GetMapping("/getAllDoctorSummaries")
-    public List<SummariesEntity> findAllDoctors(@PathVariable String doctorId) throws ItemNotFoundException{
+    @GetMapping("/getAllDoctorSummaries/{doctorId}")
+    public List<SummariesEntity> findAllDoctors(@PathVariable("doctorId") String doctorId) throws ItemNotFoundException{
         return summariesService.findAllByDoctorId(doctorId);
     }
 }

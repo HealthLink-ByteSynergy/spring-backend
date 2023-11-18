@@ -28,13 +28,13 @@ public class PatientController {
     
     private final PatientService patientService;
 
-    @GetMapping("/id")
-    public PatientEntity getPatient(@PathVariable String patientId) throws ItemNotFoundException{
+    @GetMapping("/id/{patientId}")
+    public PatientEntity getPatient(@PathVariable("patientId") String patientId) throws ItemNotFoundException{
         return patientService.getByPatientId(patientId);
     }
 
-    @GetMapping("/getByUserId")
-    public List<PatientEntity> getByUser(@PathVariable String userId) throws ItemNotFoundException{
+    @GetMapping("/getByUserId/{userId}")
+    public List<PatientEntity> getByUser(@PathVariable("userId") String userId) throws ItemNotFoundException{
         return patientService.getByUserId(userId);
     }
     
@@ -44,8 +44,8 @@ public class PatientController {
     }
 
     @Transactional
-    @DeleteMapping("/delete")
-    public void DeletePatient(@PathVariable String patientId) throws ItemNotFoundException{
+    @DeleteMapping("/delete/{patientId}")
+    public void DeletePatient(@PathVariable("patientId") String patientId) throws ItemNotFoundException{
         patientService.deleteByPatientId(patientId);
     }
 
