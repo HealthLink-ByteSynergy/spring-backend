@@ -25,12 +25,12 @@ public class DoctorController {
     
     private final DoctorService doctorService;
 
-    @GetMapping("/id/{doctorId}")
+    @GetMapping("/doctorid/{doctorId}")
     public DoctorEntity getById(@PathVariable("doctorId") String doctorId) throws ItemNotFoundException{
         return doctorService.getBydoctorId(doctorId);
     }
 
-    @GetMapping("/id/{userId}")
+    @GetMapping("/userid/{userId}")
     public DoctorEntity getByUserId(@PathVariable("userId") String userId) throws ItemNotFoundException{
         return doctorService.getByUserId(userId);
     }
