@@ -12,5 +12,5 @@ public interface DoctorService {
     DoctorEntity saveDoctorDetails(DoctorEntity doctorEntity) throws InvalidFormatException;
     DoctorEntity updateDoctorAvailability(String doctorId, IsAvailable isAvailable) throws ItemNotFoundException; //use save route
     List<DoctorEntity> getDetailsBySpecialization(String Specilization) throws ItemNotFoundException;
-
+    DoctorEntity getByUserId(String userId) throws ItemNotFoundException;
 }

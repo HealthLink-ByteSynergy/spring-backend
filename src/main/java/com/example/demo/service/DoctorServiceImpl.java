@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.IsAvailable;
+import com.example.demo.entity.UserEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.repository.DoctorRepository;
@@ -67,6 +68,19 @@ public class DoctorServiceImpl implements DoctorService {
         }
         catch(Exception ex){
             throw new ItemNotFoundException("No doctors with the given specialization are available");
+        }
+    }
+
+    @Override
+    public DoctorEntity getByUserId(String userId) throws ItemNotFoundException {
+        try{
+            UserEntity user=new UserEntity();
+            user.setId(userId);
+            Optional<DoctorEntity> doctor=doctorRepository.findByUserEntity(user);
+            return doctor.get();
+        }
+        catch(Exception ex){
+            throw new ItemNotFoundException(ex.getMessage());
         }
     }
     

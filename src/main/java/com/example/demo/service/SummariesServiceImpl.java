@@ -29,7 +29,7 @@ public class SummariesServiceImpl implements SummariesService{
     private final SummariesRepository summariesRepository;
     
     @Override
-    public String generateTempChatSummary(String message) throws InvalidFormatException {
+    public String generateTempChatSummary(String message, String length, String format) throws InvalidFormatException {
         
         String p=message.replace("\r","\n\n");
         final String uri="https://api.cohere.ai/v1/summarize";
@@ -46,9 +46,9 @@ public class SummariesServiceImpl implements SummariesService{
             headers.setContentType(MediaType.APPLICATION_JSON);
             
             Summary requestBody=new Summary();
-            requestBody.setLength("long");
+            requestBody.setLength(length);
             requestBody.setTemperature(0.2);
-            requestBody.setFormat("paragraph");
+            requestBody.setFormat(format);
             requestBody.setExtractiveness("high");
             requestBody.setText(p);
 
@@ -72,7 +72,7 @@ public class SummariesServiceImpl implements SummariesService{
     @Override
     public SummariesEntity saveSummary(SummariesEntity summariesEntity) throws InvalidFormatException {
         try{
-            final String summary=generateTempChatSummary(summariesEntity.getText());
+            final String summary=generateTempChatSummary(summariesEntity.getText(),"long","bullet");
             summariesEntity.setText(summary);
             return summariesRepository.save(summariesEntity);
         }

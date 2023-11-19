@@ -7,7 +7,7 @@ import com.example.demo.exception.ItemNotFoundException;
 import java.util.List;
 
 public interface SummariesService {
-    String generateTempChatSummary(String message) throws InvalidFormatException;
+    String generateTempChatSummary(String message, String length,String format) throws InvalidFormatException;
 
     SummariesEntity saveSummary(SummariesEntity summariesEntity) throws InvalidFormatException;
 

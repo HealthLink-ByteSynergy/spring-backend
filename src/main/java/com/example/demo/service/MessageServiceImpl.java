@@ -145,13 +145,13 @@ public class MessageServiceImpl implements MessageService {
             if(newMessage.length()<300){
                 messageEntity.setSummary(newMessage);
             }
-            else messageEntity.setSummary(summariesService.generateTempChatSummary(newMessage));
+            else messageEntity.setSummary(summariesService.generateTempChatSummary(newMessage,"long","paragraph"));
             
             //adding patient details
             
             String patientDetails=messageEntity.getSenPatientEntity().toString();
 
-            newMessage=patientDetails+"\n"+newMessage+"\nGive a response with word limit of 500";
+            newMessage=patientDetails+"\n"+newMessage+"\nKeep the response as short as possible";
 
             messageEntity.setRecPatientEntity(getIdByEmail("health-link@gmail.com"));
             MessageEntity currentEntity=messageRepository.save(messageEntity); //saving current message
@@ -166,7 +166,7 @@ public class MessageServiceImpl implements MessageService {
             newEntity.setText(botResponse);
             newEntity.setDate(new Date());
             newEntity.setMessageType(MessageType.CHAT);
-            newEntity.setSummary(summariesService.generateTempChatSummary(newMessage+botResponse));
+            newEntity.setSummary(summariesService.generateTempChatSummary(newMessage+botResponse,"long","paragraph"));
             
             return messageRepository.save(newEntity);
         }
@@ -198,7 +198,7 @@ public class MessageServiceImpl implements MessageService {
             Optional<PatientEntity> patientEntity=patientRepository.findById(ps.getPatientId());
             if(patientEntity.isPresent()) patientDetails=patientEntity.get().toString();
 
-            newMessage=patientDetails+"\n"+newMessage;
+            newMessage=patientDetails+"\n"+"Health Problem: " + newMessage;
 
             String finalMessage=newMessage+"\nIs this health problem severe enough that it requires me to consult a doctor. You must give a 1 word answer Yes or No. No additional description.";
 
@@ -206,7 +206,7 @@ public class MessageServiceImpl implements MessageService {
                         
             if(botResponse.contains("Yes")){
 
-                String giveSpecialists=newMessage+"\nSuggest some specialists in the decreasing order of relevance with separation by commas and in one sentence. Only give the specialization, no description of the specialization and no additional comments will be entertained";
+                String giveSpecialists=newMessage+"\nSuggest some specialists in the decreasing order of relevance. ";
 
                 botResponse=generateMessage(giveSpecialists);
 
@@ -231,7 +231,7 @@ public class MessageServiceImpl implements MessageService {
             currentEntity.setMessageId(UUIDService.getUUID());
             currentEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());
             // currentEntity.setSenPatientEntity(messageEntity.getRecPatientEntity());
-            currentEntity.setText(botResponse);
+            currentEntity.setText(summariesService.generateTempChatSummary(botResponse,"short","bullets"));
             currentEntity.setDate(new Date());
             currentEntity.setPreviousMessageId(messageEntity.getPreviousMessageId());
             currentEntity.setSummary(" ");

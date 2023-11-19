@@ -26,7 +26,7 @@ public class SummariesController {
 
     @PostMapping("/")
     public String generateSummary(@RequestBody String message) throws InvalidFormatException{
-        return summariesService.generateTempChatSummary(message);
+        return summariesService.generateTempChatSummary(message,"long","paragraph");
     }
 
     @PostMapping("/save")

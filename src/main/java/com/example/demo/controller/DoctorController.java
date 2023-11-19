@@ -30,6 +30,11 @@ public class DoctorController {
         return doctorService.getBydoctorId(doctorId);
     }
 
+    @GetMapping("/id/{userId}")
+    public DoctorEntity getByUserId(@PathVariable("userId") String userId) throws ItemNotFoundException{
+        return doctorService.getByUserId(userId);
+    }
+
     @PostMapping("/getBySpecialization")
     public List<DoctorEntity> getBySpecialization(@RequestBody String specialization) throws ItemNotFoundException{
         return doctorService.getDetailsBySpecialization(specialization);
