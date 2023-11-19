@@ -108,6 +108,19 @@ public class MessageServiceImpl implements MessageService {
         }
     }
 
+    @Override
+    public List<MessageEntity> getAllReceiverSenderBot(MessageEntity messageEntity) throws ItemNotFoundException {
+        try{
+            List<PatientEntity> ids=new ArrayList<>();
+            ids.add(getIdByEmail("health-link@gmail.com"));
+            ids.add(messageEntity.getSenPatientEntity());
+            // return messageRepository.findAllByRecPatientEntityAndSenPatientEntityOrderByDateAsc(messageEntity.getRecPatientEntity(), messageEntity.getSenPatientEntity());
+            return messageRepository.findByRecPatientEntityInAndSenPatientEntityInOrderByDateAsc(ids, ids);
+        }
+        catch(Exception ex){
+            throw new ItemNotFoundException(ex.getMessage());
+        }
+    }
 
     @Override
     public MessageEntity saveUserToBotMessage(MessageEntity messageEntity) throws ItemNotFoundException, InvalidFormatException {

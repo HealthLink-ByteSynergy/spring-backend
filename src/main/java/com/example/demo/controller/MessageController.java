@@ -44,6 +44,11 @@ public class MessageController {
         return messageService.getAllReceiverSender(messageEntity);
     }
 
+    @PostMapping("/getAllMessagesBot")
+    public List<MessageEntity> getAllMessagesBot(@RequestBody MessageEntity messageEntity) throws ItemNotFoundException{
+        return messageService.getAllReceiverSenderBot(messageEntity);
+    }
+
     @PostMapping("/saveUsertoBot")
     public MessageEntity saveUserToBot(@RequestBody MessageEntity messageEntity) throws ItemNotFoundException, InvalidFormatException{
         System.out.println(messageEntity.toString());

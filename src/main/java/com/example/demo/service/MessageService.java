@@ -20,7 +20,8 @@ public interface MessageService {
     MessageEntity saveUserToUserMessage(MessageEntity messageEntity) throws InvalidFormatException; //save sender and send notification
 
     //need a function that accounts separately for recommending doctors from our database;
-    
+    List<MessageEntity> getAllReceiverSenderBot(MessageEntity messageEntity) throws ItemNotFoundException;
+
     MessageEntity recommendSpecialists(MessageEntity messageEntity) throws InvalidFormatException, ItemNotFoundException;
 
     MessageEntity saveMeetingChat(MessageEntity messageEntity) throws ItemNotFoundException;
