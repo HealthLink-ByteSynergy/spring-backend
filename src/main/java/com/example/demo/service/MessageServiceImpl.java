@@ -19,10 +19,12 @@ import com.example.demo.entity.Generate;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.MessageType;
 import com.example.demo.entity.PatientEntity;
+import com.example.demo.entity.UserEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.repository.MessageRepository;
 import com.example.demo.repository.PatientRepository;
+import com.example.demo.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,6 +36,17 @@ public class MessageServiceImpl implements MessageService {
     private final SummariesService summariesService;
     private final DoctorService doctorService;
     private final PatientRepository patientRepository;
+    private final UserRepository userRepository;
+
+    public PatientEntity getIdByEmail(String email){
+        Optional<UserEntity> user=userRepository.findByEmail(email);
+        if(user.isPresent()){
+            UserEntity isuser=user.get();
+            List<PatientEntity> patient=patientRepository.findByUserEntity(isuser);
+            return patient.get(0);
+        }
+        return null;
+    }
 
     @Override
     public MessageEntity getMessageById(String messageId) throws ItemNotFoundException {
@@ -127,6 +140,7 @@ public class MessageServiceImpl implements MessageService {
 
             newMessage=patientDetails+"\n"+newMessage+"\nGive a response with word limit of 500";
 
+            messageEntity.setRecPatientEntity(getIdByEmail("health-link@gmail.com"));
             MessageEntity currentEntity=messageRepository.save(messageEntity); //saving current message
             MessageEntity newEntity=new MessageEntity();
 
@@ -167,18 +181,20 @@ public class MessageServiceImpl implements MessageService {
             
             String patientDetails="";
             PatientEntity ps=messageEntity.getSenPatientEntity();
+
             Optional<PatientEntity> patientEntity=patientRepository.findById(ps.getPatientId());
             if(patientEntity.isPresent()) patientDetails=patientEntity.get().toString();
 
             newMessage=patientDetails+"\n"+newMessage;
 
-            String finalMessage=newMessage+"\nIs this health problem severe enough that it requires me to consult a doctor. You must give a 1 word answer";
+            String finalMessage=newMessage+"\nIs this health problem severe enough that it requires me to consult a doctor. You must give a 1 word answer Yes or No. No additional description.";
 
             String botResponse=generateMessage(finalMessage); //response by bot
                         
             if(botResponse.contains("Yes")){
 
                 String giveSpecialists=newMessage+"\nSuggest some specialists in the decreasing order of relevance with separation by commas and in one sentence. Only give the specialization, no description of the specialization and no additional comments will be entertained";
+
                 botResponse=generateMessage(giveSpecialists);
 
                 System.out.println(botResponse + "hi");
@@ -197,11 +213,11 @@ public class MessageServiceImpl implements MessageService {
             else botResponse+=" This health problem is not that severe.";
 
             MessageEntity currentEntity=new MessageEntity();
-
+            currentEntity.setRecPatientEntity(getIdByEmail("health-link@gmail.com"));
             currentEntity.setMessageType(MessageType.CHAT);
             currentEntity.setMessageId(UUIDService.getUUID());
             currentEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());
-            currentEntity.setSenPatientEntity(messageEntity.getRecPatientEntity());
+            // currentEntity.setSenPatientEntity(messageEntity.getRecPatientEntity());
             currentEntity.setText(botResponse);
             currentEntity.setDate(new Date());
             currentEntity.setPreviousMessageId(messageEntity.getPreviousMessageId());
