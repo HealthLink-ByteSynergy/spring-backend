@@ -142,18 +142,24 @@ public class MessageServiceImpl implements MessageService {
             }
 
             //Saving the previous message
-            if(newMessage.length()<300){
-                messageEntity.setSummary(newMessage);
-            }
-            else messageEntity.setSummary(summariesService.generateTempChatSummary(newMessage,"long","paragraph"));
+            // if(newMessage.length()<300){
+            //     messageEntity.setSummary(newMessage);
+            // }
+            // else messageEntity.setSummary(summariesService.generateTempChatSummary(newMessage,"long","paragraph"));
             
             //adding patient details
             
-            String patientDetails=messageEntity.getSenPatientEntity().toString();
+            String patientDetails="";
+            String patient=messageEntity.getSenPatientEntity().getPatientId();
+            Optional<PatientEntity> currPatient=patientRepository.findById(patient);
+            patientDetails=currPatient.get().toString();
+            
+            System.out.println(patientDetails);
 
             newMessage=patientDetails+"\n"+newMessage+"\nKeep the response as short as possible";
 
             messageEntity.setRecPatientEntity(getIdByEmail("health-link@gmail.com"));
+            messageEntity.setSummary(messageEntity.getText());
             MessageEntity currentEntity=messageRepository.save(messageEntity); //saving current message
             MessageEntity newEntity=new MessageEntity();
 
