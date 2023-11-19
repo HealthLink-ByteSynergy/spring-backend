@@ -26,6 +26,8 @@ public class DoctorEntity {
     @JoinColumn(name="user_id")
     private UserEntity userEntity;
 
+    private String phoneNumber;
+    
     private String specialization;
 
     private IsAvailable isAvailable;
