@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,13 +28,16 @@ import lombok.RequiredArgsConstructor;
 public class SummariesServiceImpl implements SummariesService{
 
     private final SummariesRepository summariesRepository;
+
+    @Value("${cohereAi.Key}")
+    private String Key;
     
     @Override
     public String generateTempChatSummary(String message, String length, String format) throws InvalidFormatException {
         
         String p=message.replace("\r","\n\n");
         final String uri="https://api.cohere.ai/v1/summarize";
-        final String apiKey="Bearer "+ "0Nr94xvToSWRj7hM54yr8Y1uxz1HCMw8q8Bxh1Uo";
+        final String apiKey="Bearer "+ Key;
 
         //need to add minimum length check;
         try{

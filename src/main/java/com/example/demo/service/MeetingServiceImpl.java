@@ -16,6 +16,8 @@ import com.example.demo.repository.MeetingRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -28,6 +30,12 @@ import org.springframework.web.client.RestTemplate;
 public class MeetingServiceImpl implements MeetingService{
     
     private final MeetingRepository meetingRepository;
+
+    @Value("${digitalSamba.teamId}")
+    private String TeamId;
+
+    @Value("${digitalSamba.developerKey}")
+    private String developerKey;
 
     @Override
     public MeetingEntity getMeetingByMeetingId(String meetingId) throws ItemNotFoundException {
@@ -65,8 +73,8 @@ public class MeetingServiceImpl implements MeetingService{
 
     @Override
     public MeetingLink CreateMeeting() throws IOException, InterruptedException, URISyntaxException{
-        String TEAM_ID = "071b0dc4-88a4-4d43-aa48-115f1068e942";
-        String DEVELOPER_KEY = "cuCSRrn0YzW40W6qozFSxzm9jMxB1xNhkUe1JFZYKy54iTLbT1ZeRpaDik5VnWCt";
+        String TEAM_ID = TeamId;
+        String DEVELOPER_KEY = developerKey;
         String authorizationHeader = "Bearer " + Base64.getEncoder().encodeToString((TEAM_ID + ":" + DEVELOPER_KEY).getBytes());
         final String uri="https://api.digitalsamba.com/api/v1/rooms";
 

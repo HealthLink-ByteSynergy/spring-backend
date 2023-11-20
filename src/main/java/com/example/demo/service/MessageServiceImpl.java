@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,6 +40,9 @@ public class MessageServiceImpl implements MessageService {
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
 
+    @Value("${cohereAi.Key}")
+    private String Key;
+
     public PatientEntity getIdByEmail(String email){
         Optional<UserEntity> user=userRepository.findByEmail(email);
         if(user.isPresent()){
@@ -65,7 +69,7 @@ public class MessageServiceImpl implements MessageService {
     public String generateMessage(String message) throws InvalidFormatException {
         String p=message.replace("\r","\n\n");
         final String uri="https://api.cohere.ai/v1/generate";
-        final String apiKey="Bearer "+ "0Nr94xvToSWRj7hM54yr8Y1uxz1HCMw8q8Bxh1Uo";
+        final String apiKey="Bearer "+ Key;
 
         try{
             RestTemplate restTemplate=new RestTemplate();
