@@ -138,6 +138,7 @@ public class UserServiceImpl implements UserService {
             newDoctor.setDoctorId(UUIDService.getUUID());
             newDoctor.setIsAvailable(doctor.getIsAvailable());
             newDoctor.setLicenseNumber(doctor.getLicenseNumber());
+            newDoctor.setPhoneNumber(doctor.getPhoneNumber());
             newDoctor.setUserEntity(newUser);    
             newDoctor.setSpecialization(spec);
             newDoctor.setPatientEntity(patientEntity);
