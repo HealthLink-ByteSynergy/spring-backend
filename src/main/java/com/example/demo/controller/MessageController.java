@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.MessageEntity;
+import com.example.demo.entity.SpecialistEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.service.MessageService;
@@ -35,7 +36,7 @@ public class MessageController {
     }
 
     @PostMapping("/recommendSpecialist")
-    public MessageEntity recommend(@RequestBody MessageEntity messageEntity) throws InvalidFormatException, ItemNotFoundException{
+    public SpecialistEntity recommend(@RequestBody MessageEntity messageEntity) throws InvalidFormatException, ItemNotFoundException{
         return messageService.recommendSpecialists(messageEntity);
     }
 

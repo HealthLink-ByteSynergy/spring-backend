@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.util.List;
 
 import com.example.demo.entity.MessageEntity;
+import com.example.demo.entity.SpecialistEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 
@@ -22,7 +23,7 @@ public interface MessageService {
     //need a function that accounts separately for recommending doctors from our database;
     List<MessageEntity> getAllReceiverSenderBot(MessageEntity messageEntity) throws ItemNotFoundException;
 
-    MessageEntity recommendSpecialists(MessageEntity messageEntity) throws InvalidFormatException, ItemNotFoundException;
+    SpecialistEntity recommendSpecialists(MessageEntity messageEntity) throws InvalidFormatException, ItemNotFoundException;
 
     MessageEntity saveMeetingChat(MessageEntity messageEntity) throws ItemNotFoundException;
 

@@ -19,6 +19,7 @@ import com.example.demo.entity.Generate;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.MessageType;
 import com.example.demo.entity.PatientEntity;
+import com.example.demo.entity.SpecialistEntity;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
@@ -175,7 +176,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageEntity recommendSpecialists(MessageEntity messageEntity)
+    public SpecialistEntity recommendSpecialists(MessageEntity messageEntity)
             throws InvalidFormatException, ItemNotFoundException {
         try{
             //frontend needs to send the previous message id;
@@ -187,6 +188,10 @@ public class MessageServiceImpl implements MessageService {
                 MessageEntity prevMessage=getMessageById(previousId);
                 newMessage=newMessage+prevMessage.getSummary(); 
             }
+
+            //Initialise response;
+
+            SpecialistEntity specialistEntity=new SpecialistEntity();
             
             //adding patient details
             
@@ -201,12 +206,16 @@ public class MessageServiceImpl implements MessageService {
             String finalMessage=newMessage+"\nIs this health problem severe enough that it requires me to consult a doctor. You must give a 1 word answer Yes or No. No additional description.";
 
             String botResponse=generateMessage(finalMessage); //response by bot
-                        
+              
+            String currentResponse=botResponse;
+
             if(botResponse.contains("Yes")){
 
                 String giveSpecialists=newMessage+"\nSuggest some specialists in the decreasing order of relevance. Try to keep it crisp. The patient details is just for reference. Base the response on the main message. ";
 
                 botResponse=summariesService.generateTempChatSummary(generateMessage(giveSpecialists), "short", "paragraph");
+
+                currentResponse=botResponse;
 
                 botResponse+="\n\n What are the specialists names mentioned in the above text. Only give the names word by word no articles in the sentence and should have atmost 10 words and separate by commas.";
 
@@ -216,13 +225,14 @@ public class MessageServiceImpl implements MessageService {
                 for(int i=0;i<Specialists.size();i++){
                     String spec=Specialists.get(i);
                     if(spec.contains("\n")) spec=spec.split("\n")[0];
-                    spec=spec.replace(" ", "");
+                    spec=spec.replace(" ", ""); //problem
                     System.out.println(spec);
                     List<DoctorEntity> doctors=doctorService.getDetailsBySpecialization(spec);
-                    botResponse+="\n"+spec+" : \n";
-                    for(int j=0;j<doctors.size();j++){
-                        botResponse+=doctors.get(j).toString()+"\n";
-                    }
+                    specialistEntity.setDoctorEntity(doctors);
+                    // botResponse+="\n"+spec+" : \n";
+                    // for(int j=0;j<doctors.size();j++){
+                    //     botResponse+=doctors.get(j).toString()+"\n";
+                    // }
                 }
             }
 
@@ -233,12 +243,15 @@ public class MessageServiceImpl implements MessageService {
             currentEntity.setMessageType(MessageType.CHAT);
             currentEntity.setMessageId(UUIDService.getUUID());
             currentEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());
-            currentEntity.setText(botResponse);
+            currentEntity.setText(currentResponse);
             currentEntity.setDate(new Date());
             currentEntity.setPreviousMessageId(messageEntity.getPreviousMessageId());
-            currentEntity.setSummary(botResponse);
+            currentEntity.setSummary(currentResponse);
             
-            return messageRepository.save(currentEntity);
+            MessageEntity res=messageRepository.save(currentEntity);
+            specialistEntity.setMessageEntity(res);
+
+            return specialistEntity;
         }
         catch(Exception ex){
             throw new InvalidFormatException(ex.getMessage());
