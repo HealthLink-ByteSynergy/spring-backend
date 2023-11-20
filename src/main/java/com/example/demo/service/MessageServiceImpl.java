@@ -220,7 +220,7 @@ public class MessageServiceImpl implements MessageService {
                 botResponse+="\n\n What are the specialists names mentioned in the above text. Only give the names word by word no articles in the sentence and should have atmost 10 words and separate by commas.";
 
                 botResponse=summariesService.generateTempChatSummary(generateMessage(botResponse),"short", "paragraph");
-
+                List<DoctorEntity> AllDoctors=new ArrayList<>();
                 List<String> Specialists=Arrays.asList(botResponse.split(","));
                 for(int i=0;i<Specialists.size();i++){
                     String spec=Specialists.get(i);
@@ -228,12 +228,13 @@ public class MessageServiceImpl implements MessageService {
                     spec=spec.replace(" ", ""); //problem
                     System.out.println(spec);
                     List<DoctorEntity> doctors=doctorService.getDetailsBySpecialization(spec);
-                    specialistEntity.setDoctorEntity(doctors);
+                    for(int j=0;j<doctors.size();j++) AllDoctors.add(doctors.get(j));
                     // botResponse+="\n"+spec+" : \n";
                     // for(int j=0;j<doctors.size();j++){
                     //     botResponse+=doctors.get(j).toString()+"\n";
                     // }
                 }
+                 specialistEntity.setDoctorEntity(AllDoctors);
             }
 
             else botResponse+=" This health problem is not that severe or the contex is not relevant.";
