@@ -22,9 +22,13 @@ public class DoctorEntity {
     @Id
     private String doctorId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name="user_id")
     private UserEntity userEntity;
+
+    @ManyToOne()
+    @JoinColumn(name="patient_id")
+    private PatientEntity patientEntity;
 
     private String phoneNumber;
     
