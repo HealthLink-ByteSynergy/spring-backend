@@ -141,14 +141,6 @@ public class MessageServiceImpl implements MessageService {
                 }
             }
 
-            //Saving the previous message
-            // if(newMessage.length()<300){
-            //     messageEntity.setSummary(newMessage);
-            // }
-            // else messageEntity.setSummary(summariesService.generateTempChatSummary(newMessage,"long","paragraph"));
-            
-            //adding patient details
-            
             String patientDetails="";
             String patient=messageEntity.getSenPatientEntity().getPatientId();
             Optional<PatientEntity> currPatient=patientRepository.findById(patient);
@@ -204,7 +196,7 @@ public class MessageServiceImpl implements MessageService {
             Optional<PatientEntity> patientEntity=patientRepository.findById(ps.getPatientId());
             if(patientEntity.isPresent()) patientDetails=patientEntity.get().toString();
 
-            newMessage=patientDetails+"\n"+"Health Problem: " + newMessage;
+            newMessage="Patient Details: "+patientDetails+"\n"+"Main message: " + newMessage;
 
             String finalMessage=newMessage+"\nIs this health problem severe enough that it requires me to consult a doctor. You must give a 1 word answer Yes or No. No additional description.";
 
@@ -212,35 +204,39 @@ public class MessageServiceImpl implements MessageService {
                         
             if(botResponse.contains("Yes")){
 
-                String giveSpecialists=newMessage+"\nSuggest some specialists in the decreasing order of relevance. ";
+                String giveSpecialists=newMessage+"\nSuggest some specialists in the decreasing order of relevance. Try to keep it crisp. The patient details is just for reference. Base the response on the main message. ";
 
-                botResponse=generateMessage(giveSpecialists);
+                botResponse=summariesService.generateTempChatSummary(generateMessage(giveSpecialists), "short", "paragraph");
 
-                System.out.println(botResponse + "hi");
+                botResponse+="\n\n What are the specialists names mentioned in the above text. Only give the names word by word no articles in the sentence and should have atmost 10 words and separate by commas.";
+
+                botResponse=summariesService.generateTempChatSummary(generateMessage(botResponse),"short", "paragraph");
 
                 List<String> Specialists=Arrays.asList(botResponse.split(","));
                 for(int i=0;i<Specialists.size();i++){
                     String spec=Specialists.get(i);
+                    if(spec.contains("\n")) spec=spec.split("\n")[0];
+                    spec=spec.replace(" ", "");
+                    System.out.println(spec);
                     List<DoctorEntity> doctors=doctorService.getDetailsBySpecialization(spec);
-                    botResponse+="\n"+spec+": \n";
+                    botResponse+="\n"+spec+" : \n";
                     for(int j=0;j<doctors.size();j++){
                         botResponse+=doctors.get(j).toString()+"\n";
                     }
                 }
             }
 
-            else botResponse+=" This health problem is not that severe.";
+            else botResponse+=" This health problem is not that severe or the contex is not relevant.";
 
             MessageEntity currentEntity=new MessageEntity();
             currentEntity.setRecPatientEntity(getIdByEmail("health-link@gmail.com"));
             currentEntity.setMessageType(MessageType.CHAT);
             currentEntity.setMessageId(UUIDService.getUUID());
             currentEntity.setRecPatientEntity(messageEntity.getSenPatientEntity());
-            // currentEntity.setSenPatientEntity(messageEntity.getRecPatientEntity());
-            currentEntity.setText(summariesService.generateTempChatSummary(botResponse,"short","bullets"));
+            currentEntity.setText(botResponse);
             currentEntity.setDate(new Date());
             currentEntity.setPreviousMessageId(messageEntity.getPreviousMessageId());
-            currentEntity.setSummary(" ");
+            currentEntity.setSummary(botResponse);
             
             return messageRepository.save(currentEntity);
         }
