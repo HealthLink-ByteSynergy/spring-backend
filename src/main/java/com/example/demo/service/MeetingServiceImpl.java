@@ -1,17 +1,28 @@
 package com.example.demo.service;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
 
 
 import com.example.demo.entity.MeetingEntity;
+import com.example.demo.entity.MeetingLink;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.repository.MeetingRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 @Service
 @RequiredArgsConstructor
 public class MeetingServiceImpl implements MeetingService{
@@ -50,6 +61,32 @@ public class MeetingServiceImpl implements MeetingService{
         catch(Exception ex){
             throw new InvalidFormatException("Invalid parameters passed");
         }
+    }
+
+    @Override
+    public MeetingLink CreateMeeting() throws IOException, InterruptedException, URISyntaxException{
+        String TEAM_ID = "071b0dc4-88a4-4d43-aa48-115f1068e942";
+        String DEVELOPER_KEY = "cuCSRrn0YzW40W6qozFSxzm9jMxB1xNhkUe1JFZYKy54iTLbT1ZeRpaDik5VnWCt";
+        String authorizationHeader = "Bearer " + Base64.getEncoder().encodeToString((TEAM_ID + ":" + DEVELOPER_KEY).getBytes());
+        final String uri="https://api.digitalsamba.com/api/v1/rooms";
+
+        String jsonData="{ \"privacy\" : \"public\" }";
+
+        RestTemplate restTemplate=new RestTemplate();
+        HttpHeaders headers=new HttpHeaders();
+        headers.set("Authorization",authorizationHeader);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> requestEntity=new HttpEntity<>(jsonData,headers);
+
+        ResponseEntity<MeetingLink> response=restTemplate.exchange(
+                uri,
+                HttpMethod.POST,
+                requestEntity,
+                MeetingLink.class
+            );
+        
+        return response.getBody();
     }
     
 }
