@@ -33,7 +33,7 @@ public class SecurityConfig {
                             .requestMatchers("/api/v1/user/logout").permitAll()
                             .requestMatchers("/v3/api-docs/**").permitAll()
                             .requestMatchers("/swagger-ui/**").permitAll()
-                            .requestMatchers("/**").permitAll()
+                            // .requestMatchers("/**").permitAll()
                             // any other request must be authenticated
                             .anyRequest().authenticated()
                 )

@@ -153,7 +153,7 @@ public class MessageServiceImpl implements MessageService {
 
             System.out.println(patientDetails);
 
-            newMessage="Patient Details: "+ patientDetails+"\n"+"Main message: "+ newMessage+"\nGive a relevant answer even if it is not the most accurate one.Try to keep it crisp. The patient details is just for reference. Base the response on the main message.";
+            newMessage="Patient Details: "+ patientDetails+"\n"+"Problem: "+ newMessage+"\nGive a relevant answer even if it is not the most accurate one. The patient details is just for reference. Base the response on the current problem";
 
             messageEntity.setRecPatientEntity(getIdByEmail("health-link@gmail.com"));
             messageEntity.setSummary(messageEntity.getText());
