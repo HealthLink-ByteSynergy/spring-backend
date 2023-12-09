@@ -25,4 +25,6 @@ public class DoctorModelEntity {
     private IsAvailable isAvailable;
 
     private String licenseNumber;
+
+    private String phoneNumber;
 }

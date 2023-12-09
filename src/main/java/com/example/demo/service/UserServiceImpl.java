@@ -15,12 +15,15 @@ import org.springframework.stereotype.Service;
 import com.example.demo.entity.CustomEntity;
 import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.DoctorModelEntity;
+import com.example.demo.entity.PatientEntity;
 import com.example.demo.entity.Role;
 import com.example.demo.entity.UserEntity;
+import com.example.demo.entity.DoctorEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.UserDuplicateEmailException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.exception.UserWrongPasswordException;
+import com.example.demo.repository.PatientRepository;
 import com.example.demo.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,9 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final DoctorService doctorService;
+    private final PatientRepository patientRepository;
+
+
 
     @Override
     public String signup(UserEntity user) throws UserDuplicateEmailException, InvalidFormatException {
@@ -125,12 +131,20 @@ public class UserServiceImpl implements UserService {
                 spec+=specializations.get(i)+",";
             }
 
+            PatientEntity patientEntity=new PatientEntity();
+            patientEntity.setPatientId(UUIDService.getUUID());
+            patientEntity.setUserEntity(newUser);
+
+            patientRepository.save(patientEntity);
+
             DoctorEntity newDoctor=new DoctorEntity();
             newDoctor.setDoctorId(UUIDService.getUUID());
             newDoctor.setIsAvailable(doctor.getIsAvailable());
             newDoctor.setLicenseNumber(doctor.getLicenseNumber());
+            newDoctor.setPhoneNumber(doctor.getPhoneNumber());
             newDoctor.setUserEntity(newUser);    
             newDoctor.setSpecialization(spec);
+            newDoctor.setPatientEntity(patientEntity);
                 
             doctorService.saveDoctorDetails(newDoctor);
 
