@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.Generate;
 import com.example.demo.entity.IsAvailable;
+import com.example.demo.entity.MeetingLink;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.MessageType;
 import com.example.demo.entity.PatientEntity;
@@ -40,6 +41,7 @@ public class MessageServiceImpl implements MessageService {
     private final DoctorService doctorService;
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
+    private final MeetingService meetingService;
 
     @Value("${cohereAi.Key}")
     private String Key;
@@ -294,7 +296,11 @@ public class MessageServiceImpl implements MessageService {
             messageEntity.setDate(new Date());
             messageEntity.setMessageId(UUIDService.getUUID());
             String previousId=messageEntity.getPreviousMessageId();
-
+            MeetingLink meetingLink= meetingService.CreateMeeting();
+            if(meetingLink!=null){
+                messageEntity.setText(meetingLink.getRoom_url());
+            }
+            
             if(previousId!=null){
                 MessageEntity prevMessage=getMessageById(previousId);
                 messageEntity.setSummary(prevMessage.getSummary());
