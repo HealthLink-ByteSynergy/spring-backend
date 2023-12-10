@@ -12,4 +12,5 @@ import com.example.demo.entity.TemporaryChatEntity;
 public interface TemporaryChatRepository extends JpaRepository<TemporaryChatEntity,String>{
     List<TemporaryChatEntity> findAllByPatientEntityInAndDocPatientEntityIn
      (List<PatientEntity> PatientEntity, List<PatientEntity> docPatientEntity);
+    List<TemporaryChatEntity> deleteByPatientEntityInAndDocPatientEntityIn(List<PatientEntity> PatientEntity, List<PatientEntity> docPatientEntity);
 }

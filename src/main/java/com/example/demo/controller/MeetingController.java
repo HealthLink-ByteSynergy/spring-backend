@@ -16,6 +16,8 @@ import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.service.MeetingService;
 
+import jakarta.transaction.Transactional;
+
 import org.springframework.web.bind.annotation.RequestBody;
 import lombok.RequiredArgsConstructor;
 
@@ -40,6 +42,7 @@ public class MeetingController {
         return meetingService.saveMeeting(meetingEntity);
     }
 
+    @Transactional
     @DeleteMapping("/delete/{meetingId}")
     public void DeleteMeeting(@PathVariable("meetingId") String meetingId) throws ItemNotFoundException{
         meetingService.deleteByMeetingId(meetingId);

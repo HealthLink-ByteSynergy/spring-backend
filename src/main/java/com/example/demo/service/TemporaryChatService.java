@@ -1,11 +1,12 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.demo.entity.DoctorEntity;
-import com.example.demo.entity.IsAvailable;
+import com.example.demo.entity.PatientEntity;
 import com.example.demo.entity.TemporaryChatEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
@@ -36,4 +37,29 @@ public class TemporaryChatService {
             throw new InvalidFormatException(ex.getMessage());
         }
     }
+
+    public List<TemporaryChatEntity> getByPatientIds(TemporaryChatEntity temporaryChatEntity) throws ItemNotFoundException{
+        try{
+        List<PatientEntity> ids=new ArrayList<>();
+        ids.add(temporaryChatEntity.getPatientEntity());
+        ids.add(temporaryChatEntity.getDocPatientEntity());
+           return temporaryChatRepository.findAllByPatientEntityInAndDocPatientEntityIn(ids, ids);
+        }
+        catch(Exception ex){
+            throw new ItemNotFoundException(ex.getMessage());
+        }
+    }
+
+    public void deleteByPatientIds(TemporaryChatEntity temporaryChatEntity) throws ItemNotFoundException{
+        try{
+        List<PatientEntity> ids=new ArrayList<>();
+        ids.add(temporaryChatEntity.getPatientEntity());
+        ids.add(temporaryChatEntity.getDocPatientEntity());
+           temporaryChatRepository.deleteByPatientEntityInAndDocPatientEntityIn(ids, ids);
+        }
+        catch(Exception ex){
+            throw new ItemNotFoundException(ex.getMessage());
+        }
+    }
+
 }

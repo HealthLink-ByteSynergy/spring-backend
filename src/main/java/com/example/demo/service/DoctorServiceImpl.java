@@ -83,5 +83,16 @@ public class DoctorServiceImpl implements DoctorService {
             throw new ItemNotFoundException(ex.getMessage());
         }
     }
+
+    @Override
+    public List<DoctorEntity> getByAvailability(IsAvailable isAvailable) throws ItemNotFoundException {
+        // TODO Auto-generated method stub
+        try{
+            return doctorRepository.findAllByIsAvailable(IsAvailable.AVAILABLE);
+        }
+        catch(Exception ex){
+            throw new ItemNotFoundException(ex.getMessage());
+        }
+    }
     
 }
