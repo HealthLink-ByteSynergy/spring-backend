@@ -191,7 +191,7 @@ public class MessageServiceImpl implements MessageService {
             // Add patient details too
             String newMessage=" ";
 
-            if(previousId!=null){
+            if(previousId!=null && !previousId.equals("") && !previousId.equals(" ")){
                 MessageEntity prevMessage=getMessageById(previousId);
                 newMessage=newMessage+prevMessage.getSummary(); 
             }
