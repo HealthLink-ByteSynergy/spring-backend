@@ -50,6 +50,26 @@ public class TemporaryChatService {
         }
     }
 
+    public List<TemporaryChatEntity> getByPatientId(TemporaryChatEntity temporaryChatEntity) throws ItemNotFoundException{
+        try{
+        
+           return temporaryChatRepository.findAllByPatientEntity(temporaryChatEntity.getPatientEntity());
+        }
+        catch(Exception ex){
+            throw new ItemNotFoundException(ex.getMessage());
+        }
+    }
+
+    public List<TemporaryChatEntity> getByDocPatientId(TemporaryChatEntity temporaryChatEntity) throws ItemNotFoundException{
+        try{
+        
+           return temporaryChatRepository.findAllByDocPatientEntity(temporaryChatEntity.getDocPatientEntity());
+        }
+        catch(Exception ex){
+            throw new ItemNotFoundException(ex.getMessage());
+        }
+    }
+
     public void deleteByPatientIds(TemporaryChatEntity temporaryChatEntity) throws ItemNotFoundException{
         try{
         List<PatientEntity> ids=new ArrayList<>();

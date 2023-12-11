@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.PatientEntity;
 import com.example.demo.entity.TemporaryChatEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
@@ -29,7 +30,25 @@ public class TemporaryChatController {
     public TemporaryChatEntity getTempChatById(@PathVariable("tempId") String tempId) throws ItemNotFoundException{
         return temporaryChatService.getChatById(tempId);
     }
+
+    @GetMapping("/id/{patientId}")
+    public List<TemporaryChatEntity> getTempChatByPatientId(@PathVariable("patientId") String patientId) throws ItemNotFoundException{
+        TemporaryChatEntity temporaryChatEntity = new TemporaryChatEntity();
+        PatientEntity patientEntity= new PatientEntity();
+        patientEntity.setPatientId(patientId);
+        temporaryChatEntity.setPatientEntity(patientEntity);
+        return temporaryChatService.getByPatientId(temporaryChatEntity);
+    }
     
+    @GetMapping("/id/{docpatientId}")
+    public List<TemporaryChatEntity> getTempChatByDocPatientId(@PathVariable("docpatientId") String docpatientId) throws ItemNotFoundException{
+        TemporaryChatEntity temporaryChatEntity = new TemporaryChatEntity();
+        PatientEntity patientEntity= new PatientEntity();
+        patientEntity.setPatientId(docpatientId);
+        temporaryChatEntity.setDocPatientEntity(patientEntity);
+        return temporaryChatService.getByDocPatientId(temporaryChatEntity);
+    }
+
     @PostMapping("/addTempChat")
     public TemporaryChatEntity addTempChat(@RequestBody TemporaryChatEntity temporaryChatEntity) throws ItemNotFoundException, InvalidFormatException{
         return temporaryChatService.saveTempDetails(temporaryChatEntity);

@@ -13,4 +13,7 @@ public interface TemporaryChatRepository extends JpaRepository<TemporaryChatEnti
     List<TemporaryChatEntity> findAllByPatientEntityInAndDocPatientEntityIn
      (List<PatientEntity> PatientEntity, List<PatientEntity> docPatientEntity);
     List<TemporaryChatEntity> deleteByPatientEntityInAndDocPatientEntityIn(List<PatientEntity> PatientEntity, List<PatientEntity> docPatientEntity);
+    List<TemporaryChatEntity> findAllByPatientEntity(PatientEntity patientEntity);
+    List<TemporaryChatEntity> findAllByDocPatientEntity(PatientEntity docPatientEntity);
+
 }
