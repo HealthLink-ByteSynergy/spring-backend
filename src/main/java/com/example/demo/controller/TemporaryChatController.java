@@ -26,12 +26,12 @@ public class TemporaryChatController {
     
     private final TemporaryChatService temporaryChatService;
 
-    @GetMapping("/id/{tempId}")
+    @GetMapping("/tempid/{tempId}")
     public TemporaryChatEntity getTempChatById(@PathVariable("tempId") String tempId) throws ItemNotFoundException{
         return temporaryChatService.getChatById(tempId);
     }
 
-    @GetMapping("/id/{patientId}")
+    @GetMapping("/patientid/{patientId}")
     public List<TemporaryChatEntity> getTempChatByPatientId(@PathVariable("patientId") String patientId) throws ItemNotFoundException{
         TemporaryChatEntity temporaryChatEntity = new TemporaryChatEntity();
         PatientEntity patientEntity= new PatientEntity();
@@ -40,7 +40,7 @@ public class TemporaryChatController {
         return temporaryChatService.getByPatientId(temporaryChatEntity);
     }
     
-    @GetMapping("/id/{docpatientId}")
+    @GetMapping("/docpatientid/{docpatientId}")
     public List<TemporaryChatEntity> getTempChatByDocPatientId(@PathVariable("docpatientId") String docpatientId) throws ItemNotFoundException{
         TemporaryChatEntity temporaryChatEntity = new TemporaryChatEntity();
         PatientEntity patientEntity= new PatientEntity();
