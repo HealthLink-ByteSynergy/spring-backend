@@ -31,6 +31,7 @@ public class TemporaryChatService {
 
     public TemporaryChatEntity saveTempDetails(TemporaryChatEntity tempEntity) throws InvalidFormatException {
         try{
+            tempEntity.setTempId(UUIDService.getUUID());
             return temporaryChatRepository.save(tempEntity);
         }
         catch(Exception ex){
