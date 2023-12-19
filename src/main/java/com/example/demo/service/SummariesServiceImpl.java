@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.entity.DoctorEntity;
+import com.example.demo.entity.Generate;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.PatientEntity;
 import com.example.demo.entity.SummariesEntity;
@@ -21,6 +22,7 @@ import com.example.demo.entity.Summary;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.repository.MessageRepository;
+import com.example.demo.repository.PatientRepository;
 import com.example.demo.repository.SummariesRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -34,10 +36,44 @@ public class SummariesServiceImpl implements SummariesService{
 
     private final MessageRepository messageRepository;
 
-    private final MessageService messageService;
+    private final PatientRepository patientRepository;
 
     @Value("${cohereAi.Key}")
     private String Key;
+
+    public String generateMessage(String message) throws InvalidFormatException {
+        String p=message.replace("\r","\n\n");
+        final String uri="https://api.cohere.ai/v1/generate";
+        final String apiKey="Bearer "+ Key;
+
+        try{
+            RestTemplate restTemplate=new RestTemplate();
+            HttpHeaders headers=new HttpHeaders();
+            headers.set("Authorization",apiKey);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            
+            Generate requestBody= new Generate();
+            requestBody.setTruncate("END");
+            requestBody.setReturn_likelihoods("NONE");
+            requestBody.setPrompt(p);
+
+            HttpEntity<Generate> requestEntity=new HttpEntity<>(requestBody,headers);
+
+            ResponseEntity<Generate> response=restTemplate.exchange(
+                uri,
+                HttpMethod.POST,
+                requestEntity,
+                Generate.class
+            );
+
+            String finalresponse=response.getBody().getGenerations().get(0).getText();
+            return finalresponse;
+        }
+        catch(Exception ex){
+            throw new InvalidFormatException(ex.getMessage());
+        }
+    }
+
     
     @Override
     public String generateTempChatSummary(String message, String length, String format) throws InvalidFormatException {
@@ -83,6 +119,8 @@ public class SummariesServiceImpl implements SummariesService{
     @Override
     public SummariesEntity saveSummary(SummariesEntity summariesEntity) throws InvalidFormatException {
         try{
+
+            summariesEntity.setSummaryId(UUIDService.getUUID());
             String message="";
             PatientEntity patient=summariesEntity.getPatientEntity();
             PatientEntity doc=summariesEntity.getDoctorEntity().getPatientEntity();
@@ -95,24 +133,20 @@ public class SummariesServiceImpl implements SummariesService{
             for(int i=0;i<messages.size();i++){
                 MessageEntity currentMessage=messages.get(i);
                 if(currentMessage.getSenPatientEntity().getPatientId().equals(patient.getPatientId())){
-                    message += patient.getName() + " said " + currentMessage.getText() + "\n";
+                    PatientEntity p=patientRepository.findById(patient.getPatientId()).get();
+                    message += p.getName() + " said " + currentMessage.getText() + "\n";
                 }
                 else {
-                    message += doc.getName() + " said " + currentMessage.getText() + "\n";
+                    PatientEntity q=patientRepository.findById(doc.getPatientId()).get();
+                    message += q.getName() + " said " + currentMessage.getText() + "\n";
                 }
             }
 
-            String finalmessage=messageService.generateMessage(message + "What is the summary of this conversation?");
+            String finalmessage=generateMessage(message + "Give detailed summary of this conversation?");
 
-            String summary="";
-            if(finalmessage.length()<=250){
-                summary=finalmessage;
-            }
-            else {
-                summary=generateTempChatSummary(finalmessage,"long","paragraph");
-            }
-            
-            summariesEntity.setText(summary);
+            summariesEntity.setText(finalmessage);
+
+            System.out.println(finalmessage);
             return summariesRepository.save(summariesEntity);
 
         }
