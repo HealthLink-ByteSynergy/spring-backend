@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,6 +131,7 @@ public class SummariesServiceImpl implements SummariesService{
             patients.add(patient);
             List<MessageEntity> messages=messageRepository.findByRecPatientEntityInAndSenPatientEntityInOrderByDateAsc(patients, patients);
 
+            summariesEntity.setDate(new Date());
             for(int i=0;i<messages.size();i++){
                 MessageEntity currentMessage=messages.get(i);
                 if(currentMessage.getSenPatientEntity().getPatientId().equals(patient.getPatientId())){
