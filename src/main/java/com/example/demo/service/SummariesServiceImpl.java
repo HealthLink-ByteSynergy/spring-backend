@@ -104,11 +104,17 @@ public class SummariesServiceImpl implements SummariesService{
 
             String finalmessage=messageService.generateMessage(message + "What is the summary of this conversation?");
 
-            final String summary=generateTempChatSummary(finalmessage,"long","paragraph");
-
+            String summary="";
+            if(finalmessage.length()<=250){
+                summary=finalmessage;
+            }
+            else {
+                summary=generateTempChatSummary(finalmessage,"long","paragraph");
+            }
+            
             summariesEntity.setText(summary);
             return summariesRepository.save(summariesEntity);
-            
+
         }
         catch(Exception ex){
             throw new InvalidFormatException(ex.getMessage());
