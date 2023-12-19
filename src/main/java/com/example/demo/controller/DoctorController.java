@@ -29,6 +29,11 @@ public class DoctorController {
         return doctorService.getBydoctorId(doctorId);
     }
 
+    @GetMapping("/getdocidbypatientid/{docPatientId}")
+    public DoctorEntity getByDocPatientId(@PathVariable("docPatientId") String docPatientId) throws ItemNotFoundException{
+        return doctorService.getByPatientId(docPatientId);
+    }
+
     @GetMapping("/userid/{userId}")
     public DoctorEntity getByUserId(@PathVariable("userId") String userId) throws ItemNotFoundException{
         return doctorService.getByUserId(userId);

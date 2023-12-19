@@ -3,10 +3,12 @@ package com.example.demo.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.IsAvailable;
+import com.example.demo.entity.PatientEntity;
 import com.example.demo.entity.UserEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
@@ -89,6 +91,24 @@ public class DoctorServiceImpl implements DoctorService {
         // TODO Auto-generated method stub
         try{
             return doctorRepository.findAllByIsAvailable(IsAvailable.AVAILABLE);
+        }
+        catch(Exception ex){
+            throw new ItemNotFoundException(ex.getMessage());
+        }
+    }
+
+    @Override
+    public DoctorEntity getByPatientId(String patientId) throws ItemNotFoundException {
+        try{
+            PatientEntity patientEntity=new PatientEntity();
+            patientEntity.setPatientId(patientId);
+            Optional<DoctorEntity> newEntity=doctorRepository.findByPatientEntity(patientEntity);
+            if(newEntity.isPresent()){
+                return newEntity.get();
+            }
+            else {
+                throw new ItemNotFoundException("Item doesn't exist");
+            }
         }
         catch(Exception ex){
             throw new ItemNotFoundException(ex.getMessage());
