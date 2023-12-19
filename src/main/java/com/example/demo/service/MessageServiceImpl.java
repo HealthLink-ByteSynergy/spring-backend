@@ -327,14 +327,12 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void deleteAllByRecIdAndSendId(MessageEntity messageEntity, DoctorEntity doctorEntity) throws ItemNotFoundException {
+    public void deleteAllByRecIdAndSendId(MessageEntity messageEntity) throws ItemNotFoundException {
         try{
             List<PatientEntity> ids=new ArrayList<>();
             ids.add(messageEntity.getRecPatientEntity());
             ids.add(messageEntity.getSenPatientEntity());
-            messageRepository.deleteByRecPatientEntityInAndSenPatientEntityIn(ids, ids);
-            doctorService.updateDoctorAvailability(doctorEntity.getDoctorId(), IsAvailable.AVAILABLE);
-            
+            messageRepository.deleteByRecPatientEntityInAndSenPatientEntityIn(ids, ids);            
             //removing from tempchat table
         }
         catch(Exception ex){

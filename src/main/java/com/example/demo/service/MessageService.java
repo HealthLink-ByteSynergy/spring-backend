@@ -30,5 +30,7 @@ public interface MessageService {
 
     void deleteByMessageId(String messageId) throws ItemNotFoundException;
 
-    void deleteAllByRecIdAndSendId(MessageEntity messageEntity, DoctorEntity doctorEntity) throws ItemNotFoundException;
+    void deleteAllByRecIdAndSendId(MessageEntity messageEntity) throws ItemNotFoundException;
+
+
 }

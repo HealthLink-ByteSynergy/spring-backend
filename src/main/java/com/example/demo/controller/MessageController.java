@@ -76,7 +76,7 @@ public class MessageController {
 
     @Transactional
     @DeleteMapping("/deleteAll")
-    public void deleteByRecAndSenId(@RequestBody MessageEntity messageEntity , @RequestBody DoctorEntity doctorEntity) throws ItemNotFoundException{
-        messageService.deleteAllByRecIdAndSendId(messageEntity, doctorEntity);
+    public void deleteByRecAndSenId(@RequestBody MessageEntity messageEntity) throws ItemNotFoundException{
+        messageService.deleteAllByRecIdAndSendId(messageEntity);
     }
 }

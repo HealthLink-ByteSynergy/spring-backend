@@ -76,7 +76,7 @@ public class SummariesServiceImpl implements SummariesService{
     @Override
     public SummariesEntity saveSummary(SummariesEntity summariesEntity) throws InvalidFormatException {
         try{
-            final String summary=generateTempChatSummary(summariesEntity.getText(),"long","bullet");
+            final String summary=generateTempChatSummary(summariesEntity.getText(),"long","paragraph");
             summariesEntity.setText(summary);
             return summariesRepository.save(summariesEntity);
         }
