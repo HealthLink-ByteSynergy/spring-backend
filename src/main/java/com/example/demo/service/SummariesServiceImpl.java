@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,11 +14,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.entity.DoctorEntity;
+import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.PatientEntity;
 import com.example.demo.entity.SummariesEntity;
 import com.example.demo.entity.Summary;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
+import com.example.demo.repository.MessageRepository;
 import com.example.demo.repository.SummariesRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,10 @@ import lombok.RequiredArgsConstructor;
 public class SummariesServiceImpl implements SummariesService{
 
     private final SummariesRepository summariesRepository;
+
+    private final MessageRepository messageRepository;
+
+    private final MessageService messageService;
 
     @Value("${cohereAi.Key}")
     private String Key;
@@ -76,9 +83,32 @@ public class SummariesServiceImpl implements SummariesService{
     @Override
     public SummariesEntity saveSummary(SummariesEntity summariesEntity) throws InvalidFormatException {
         try{
-            final String summary=generateTempChatSummary(summariesEntity.getText(),"long","paragraph");
+            String message="";
+            PatientEntity patient=summariesEntity.getPatientEntity();
+            PatientEntity doc=summariesEntity.getDoctorEntity().getPatientEntity();
+
+            List<PatientEntity> patients=new ArrayList<>();
+            patients.add(doc);
+            patients.add(patient);
+            List<MessageEntity> messages=messageRepository.findByRecPatientEntityInAndSenPatientEntityInOrderByDateAsc(patients, patients);
+
+            for(int i=0;i<messages.size();i++){
+                MessageEntity currentMessage=messages.get(i);
+                if(currentMessage.getSenPatientEntity().getPatientId().equals(patient.getPatientId())){
+                    message += patient.getName() + " said " + currentMessage.getText() + "\n";
+                }
+                else {
+                    message += doc.getName() + " said " + currentMessage.getText() + "\n";
+                }
+            }
+
+            String finalmessage=messageService.generateMessage(message + "What is the summary of this conversation?");
+
+            final String summary=generateTempChatSummary(finalmessage,"long","paragraph");
+
             summariesEntity.setText(summary);
             return summariesRepository.save(summariesEntity);
+            
         }
         catch(Exception ex){
             throw new InvalidFormatException(ex.getMessage());
