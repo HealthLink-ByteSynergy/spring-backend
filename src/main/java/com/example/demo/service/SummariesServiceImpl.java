@@ -161,6 +161,7 @@ public class SummariesServiceImpl implements SummariesService{
             List<MessageEntity> messages=messageRepository.findByRecPatientEntityInAndSenPatientEntityInOrderByDateAsc(patients, patients);
 
             summariesEntity.setDate(new Date());
+
             for(int i=0;i<messages.size();i++){
                 MessageEntity currentMessage=messages.get(i);
                 if(currentMessage.getSenPatientEntity().getPatientId().equals(patient.getPatientId())){
@@ -171,11 +172,15 @@ public class SummariesServiceImpl implements SummariesService{
                 }
             }
 
-            String finalmessage=generateMessage(message + "Give detailed summary of this conversation?");
+            String finalmessage=generateMessage(message + "Give summary of this conversation with users as the actors? ");
+
+            System.out.println(finalmessage);
+            if(finalmessage.contains("\n\n")) {
+                finalmessage=finalmessage.split("\n\n")[0];
+            }
 
             summariesEntity.setText(finalmessage);
 
-            System.out.println(finalmessage);
             return summariesRepository.save(summariesEntity);
             // System.out.println(summariesEntity);
             // return null;
@@ -215,7 +220,14 @@ public class SummariesServiceImpl implements SummariesService{
         try{
             DoctorEntity doctorEntity=new DoctorEntity();
             doctorEntity.setDoctorId(doctorId);
-            return summariesRepository.findAllByDoctorEntity(doctorEntity);
+            List<SummariesEntity> summaries=summariesRepository.findAllByDoctorEntity(doctorEntity);
+            for(int i=0;i<summaries.size();i++){
+                Optional<PrescriptionEntity> pres=prescriptionRepository.findById(summaries.get(i).getPrescriptionEntity().getPrescriptionId());
+                if(pres.isPresent()){
+                    summaries.get(i).setPrescriptionEntity(pres.get());
+                }
+            }
+            return summaries;
         }
         catch(Exception ex){
             throw new ItemNotFoundException("No summaries for this doctorId found");
