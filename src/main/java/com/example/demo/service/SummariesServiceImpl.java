@@ -18,12 +18,15 @@ import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.Generate;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.PatientEntity;
+import com.example.demo.entity.PrescriptionEntity;
 import com.example.demo.entity.SummariesEntity;
 import com.example.demo.entity.Summary;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
+import com.example.demo.repository.DoctorRepository;
 import com.example.demo.repository.MessageRepository;
 import com.example.demo.repository.PatientRepository;
+import com.example.demo.repository.PrescriptionRepository;
 import com.example.demo.repository.SummariesRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,10 @@ public class SummariesServiceImpl implements SummariesService{
     private final MessageRepository messageRepository;
 
     private final PatientRepository patientRepository;
+
+    private final DoctorRepository doctorRepository;
+
+    private final PrescriptionRepository prescriptionRepository;
 
     @Value("${cohereAi.Key}")
     private String Key;
@@ -125,21 +132,41 @@ public class SummariesServiceImpl implements SummariesService{
             String message="";
             PatientEntity patient=summariesEntity.getPatientEntity();
             PatientEntity doc=summariesEntity.getDoctorEntity().getPatientEntity();
+            PatientEntity p=patientRepository.findById(patient.getPatientId()).get();
+            PatientEntity q=patientRepository.findById(doc.getPatientId()).get();
+
+            
+            Optional<DoctorEntity> doctor=doctorRepository.findByPatientEntity(doc);
+            DoctorEntity finaldoctor;
+
+            if(doctor.isPresent()){
+                finaldoctor=doctor.get();
+                summariesEntity.setDoctorEntity(finaldoctor);
+
+                Optional<PrescriptionEntity> pres=prescriptionRepository.findById(summariesEntity.getPrescriptionEntity().getPrescriptionId());
+
+                if(pres.isPresent()){
+                    summariesEntity.setPrescriptionEntity(pres.get());
+                }
+                else throw new ItemNotFoundException("Prescription Not found");
+
+                summariesEntity.setPatientEntity(p);
+            }
+
+            else throw new ItemNotFoundException("Doctor with given patientId doesn't exist");
 
             List<PatientEntity> patients=new ArrayList<>();
-            patients.add(doc);
-            patients.add(patient);
+            patients.add(p);
+            patients.add(q);
             List<MessageEntity> messages=messageRepository.findByRecPatientEntityInAndSenPatientEntityInOrderByDateAsc(patients, patients);
 
             summariesEntity.setDate(new Date());
             for(int i=0;i<messages.size();i++){
                 MessageEntity currentMessage=messages.get(i);
                 if(currentMessage.getSenPatientEntity().getPatientId().equals(patient.getPatientId())){
-                    PatientEntity p=patientRepository.findById(patient.getPatientId()).get();
                     message += p.getName() + " said " + currentMessage.getText() + "\n";
                 }
                 else {
-                    PatientEntity q=patientRepository.findById(doc.getPatientId()).get();
                     message += q.getName() + " said " + currentMessage.getText() + "\n";
                 }
             }
@@ -150,6 +177,8 @@ public class SummariesServiceImpl implements SummariesService{
 
             System.out.println(finalmessage);
             return summariesRepository.save(summariesEntity);
+            // System.out.println(summariesEntity);
+            // return null;
 
         }
         catch(Exception ex){

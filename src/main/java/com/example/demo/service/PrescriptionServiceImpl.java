@@ -20,7 +20,7 @@ public class PrescriptionServiceImpl implements PrescriptionService{
     @Override
     public PrescriptionEntity getByPrescriptionId(String prescriptionId) throws ItemNotFoundException {
         try{
-            Optional<PrescriptionEntity> patient=prescriptionRepository.findById(prescriptionId);
+            Optional<PrescriptionEntity> patient=prescriptionRepository.findByPrescriptionId(prescriptionId);
             if(patient.isPresent()) return patient.get();
         }
         catch(Exception ex){
