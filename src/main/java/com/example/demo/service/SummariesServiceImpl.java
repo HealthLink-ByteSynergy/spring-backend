@@ -134,7 +134,6 @@ public class SummariesServiceImpl implements SummariesService{
             PatientEntity doc=summariesEntity.getDoctorEntity().getPatientEntity();
             PatientEntity p=patientRepository.findById(patient.getPatientId()).get();
             PatientEntity q=patientRepository.findById(doc.getPatientId()).get();
-
             
             Optional<DoctorEntity> doctor=doctorRepository.findByPatientEntity(doc);
             DoctorEntity finaldoctor;
@@ -168,7 +167,7 @@ public class SummariesServiceImpl implements SummariesService{
                     message += p.getName() + " said " + currentMessage.getText() + "\n";
                 }
                 else {
-                    message += q.getName() + " said " + currentMessage.getText() + "\n";
+                    message += q.getUserEntity().getUser() + " said " + currentMessage.getText() + "\n";
                 }
             }
 
