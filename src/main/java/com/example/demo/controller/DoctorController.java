@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.DoctorEntity;
@@ -28,6 +27,11 @@ public class DoctorController {
     @GetMapping("/doctorid/{doctorId}")
     public DoctorEntity getById(@PathVariable("doctorId") String doctorId) throws ItemNotFoundException{
         return doctorService.getBydoctorId(doctorId);
+    }
+
+    @GetMapping("/getdocidbypatientid/{docPatientId}")
+    public DoctorEntity getByDocPatientId(@PathVariable("docPatientId") String docPatientId) throws ItemNotFoundException{
+        return doctorService.getByPatientId(docPatientId);
     }
 
     @GetMapping("/userid/{userId}")

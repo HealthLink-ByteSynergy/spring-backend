@@ -7,8 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +36,7 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
     private final DoctorService doctorService;
     private final PatientRepository patientRepository;
-
+  
     @Override
     public String signup(UserEntity user) throws UserDuplicateEmailException, InvalidFormatException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());

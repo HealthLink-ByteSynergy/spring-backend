@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,11 +15,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.entity.DoctorEntity;
+import com.example.demo.entity.Generate;
+import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.PatientEntity;
+import com.example.demo.entity.PrescriptionEntity;
 import com.example.demo.entity.SummariesEntity;
 import com.example.demo.entity.Summary;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
+import com.example.demo.repository.DoctorRepository;
+import com.example.demo.repository.MessageRepository;
+import com.example.demo.repository.PatientRepository;
+import com.example.demo.repository.PrescriptionRepository;
 import com.example.demo.repository.SummariesRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -29,8 +38,50 @@ public class SummariesServiceImpl implements SummariesService{
 
     private final SummariesRepository summariesRepository;
 
+    private final MessageRepository messageRepository;
+
+    private final PatientRepository patientRepository;
+
+    private final DoctorRepository doctorRepository;
+
+    private final PrescriptionRepository prescriptionRepository;
+
     @Value("${cohereAi.Key}")
     private String Key;
+
+    public String generateMessage(String message) throws InvalidFormatException {
+        String p=message.replace("\r","\n\n");
+        final String uri="https://api.cohere.ai/v1/generate";
+        final String apiKey="Bearer "+ Key;
+
+        try{
+            RestTemplate restTemplate=new RestTemplate();
+            HttpHeaders headers=new HttpHeaders();
+            headers.set("Authorization",apiKey);
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            
+            Generate requestBody= new Generate();
+            requestBody.setTruncate("END");
+            requestBody.setReturn_likelihoods("NONE");
+            requestBody.setPrompt(p);
+
+            HttpEntity<Generate> requestEntity=new HttpEntity<>(requestBody,headers);
+
+            ResponseEntity<Generate> response=restTemplate.exchange(
+                uri,
+                HttpMethod.POST,
+                requestEntity,
+                Generate.class
+            );
+
+            String finalresponse=response.getBody().getGenerations().get(0).getText();
+            return finalresponse;
+        }
+        catch(Exception ex){
+            throw new InvalidFormatException(ex.getMessage());
+        }
+    }
+
     
     @Override
     public String generateTempChatSummary(String message, String length, String format) throws InvalidFormatException {
@@ -76,9 +127,63 @@ public class SummariesServiceImpl implements SummariesService{
     @Override
     public SummariesEntity saveSummary(SummariesEntity summariesEntity) throws InvalidFormatException {
         try{
-            final String summary=generateTempChatSummary(summariesEntity.getText(),"long","bullet");
-            summariesEntity.setText(summary);
+
+            summariesEntity.setSummaryId(UUIDService.getUUID());
+            String message="";
+            PatientEntity patient=summariesEntity.getPatientEntity();
+            PatientEntity doc=summariesEntity.getDoctorEntity().getPatientEntity();
+            PatientEntity p=patientRepository.findById(patient.getPatientId()).get();
+            PatientEntity q=patientRepository.findById(doc.getPatientId()).get();
+            
+            Optional<DoctorEntity> doctor=doctorRepository.findByPatientEntity(doc);
+            DoctorEntity finaldoctor;
+
+            if(doctor.isPresent()){
+                finaldoctor=doctor.get();
+                summariesEntity.setDoctorEntity(finaldoctor);
+
+                Optional<PrescriptionEntity> pres=prescriptionRepository.findById(summariesEntity.getPrescriptionEntity().getPrescriptionId());
+
+                if(pres.isPresent()){
+                    summariesEntity.setPrescriptionEntity(pres.get());
+                }
+                else throw new ItemNotFoundException("Prescription Not found");
+
+                summariesEntity.setPatientEntity(p);
+            }
+
+            else throw new ItemNotFoundException("Doctor with given patientId doesn't exist");
+
+            List<PatientEntity> patients=new ArrayList<>();
+            patients.add(p);
+            patients.add(q);
+            List<MessageEntity> messages=messageRepository.findByRecPatientEntityInAndSenPatientEntityInOrderByDateAsc(patients, patients);
+
+            summariesEntity.setDate(new Date());
+
+            for(int i=0;i<messages.size();i++){
+                MessageEntity currentMessage=messages.get(i);
+                if(currentMessage.getSenPatientEntity().getPatientId().equals(patient.getPatientId())){
+                    message += p.getName() + " said " + currentMessage.getText() + "\n";
+                }
+                else {
+                    message += q.getUserEntity().getUser() + " said " + currentMessage.getText() + "\n";
+                }
+            }
+
+            String finalmessage=generateMessage(message + "Give summary of this conversation with users as the actors? ");
+
+            System.out.println(finalmessage);
+            if(finalmessage.contains("\n\n")) {
+                finalmessage=finalmessage.split("\n\n")[0];
+            }
+
+            summariesEntity.setText(finalmessage);
+
             return summariesRepository.save(summariesEntity);
+            // System.out.println(summariesEntity);
+            // return null;
+
         }
         catch(Exception ex){
             throw new InvalidFormatException(ex.getMessage());
@@ -114,7 +219,14 @@ public class SummariesServiceImpl implements SummariesService{
         try{
             DoctorEntity doctorEntity=new DoctorEntity();
             doctorEntity.setDoctorId(doctorId);
-            return summariesRepository.findAllByDoctorEntity(doctorEntity);
+            List<SummariesEntity> summaries=summariesRepository.findAllByDoctorEntity(doctorEntity);
+            for(int i=0;i<summaries.size();i++){
+                Optional<PrescriptionEntity> pres=prescriptionRepository.findById(summaries.get(i).getPrescriptionEntity().getPrescriptionId());
+                if(pres.isPresent()){
+                    summaries.get(i).setPrescriptionEntity(pres.get());
+                }
+            }
+            return summaries;
         }
         catch(Exception ex){
             throw new ItemNotFoundException("No summaries for this doctorId found");

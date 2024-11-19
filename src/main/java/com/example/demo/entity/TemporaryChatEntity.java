@@ -12,28 +12,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "doctor")
+@Table(name = "temporary_chat")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DoctorEntity {
+public class TemporaryChatEntity {
+
     @Id
-    private String doctorId;
+    private String tempId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="user_id")
-    private UserEntity userEntity;
-
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne()
     @JoinColumn(name="patient_id")
     private PatientEntity patientEntity;
 
-    private String phoneNumber;
-    
-    private String specialization;
-
-    private IsAvailable isAvailable;
-
-    private String licenseNumber;
+    @ManyToOne()
+    @JoinColumn(name="doctorPatient_id")
+    private PatientEntity docPatientEntity;
 }

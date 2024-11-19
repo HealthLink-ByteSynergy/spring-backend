@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import java.util.List;
 
+import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.SpecialistEntity;
 import com.example.demo.exception.InvalidFormatException;
@@ -30,4 +31,6 @@ public interface MessageService {
     void deleteByMessageId(String messageId) throws ItemNotFoundException;
 
     void deleteAllByRecIdAndSendId(MessageEntity messageEntity) throws ItemNotFoundException;
+
+
 }

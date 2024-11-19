@@ -13,4 +13,6 @@ public interface DoctorService {
     DoctorEntity updateDoctorAvailability(String doctorId, IsAvailable isAvailable) throws ItemNotFoundException; //use save route
     List<DoctorEntity> getDetailsBySpecialization(String Specilization) throws ItemNotFoundException;
     DoctorEntity getByUserId(String userId) throws ItemNotFoundException;
+    DoctorEntity getByPatientId(String patientId) throws ItemNotFoundException;
+    List<DoctorEntity> getByAvailability(IsAvailable isAvailable) throws ItemNotFoundException;
 }

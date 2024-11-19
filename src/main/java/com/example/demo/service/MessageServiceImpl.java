@@ -17,6 +17,8 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.Generate;
+import com.example.demo.entity.IsAvailable;
+import com.example.demo.entity.MeetingLink;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.MessageType;
 import com.example.demo.entity.PatientEntity;
@@ -39,6 +41,7 @@ public class MessageServiceImpl implements MessageService {
     private final DoctorService doctorService;
     private final PatientRepository patientRepository;
     private final UserRepository userRepository;
+    private final MeetingService meetingService;
 
     @Value("${cohereAi.Key}")
     private String Key;
@@ -153,7 +156,7 @@ public class MessageServiceImpl implements MessageService {
 
             System.out.println(patientDetails);
 
-            newMessage="Patient Details: "+ patientDetails+"\n"+"Main message: "+ newMessage+"\nGive a relevant answer even if it is not the most accurate one.Try to keep it crisp. The patient details is just for reference. Base the response on the main message.";
+            newMessage="Patient Details: "+ patientDetails+"\n"+"Problem: "+ newMessage+"\nGive a relevant answer even if it is not the most accurate one. The patient details is just for reference. Base the response on the current problem";
 
             messageEntity.setRecPatientEntity(getIdByEmail("health-link@gmail.com"));
             messageEntity.setSummary(messageEntity.getText());
@@ -188,7 +191,7 @@ public class MessageServiceImpl implements MessageService {
             // Add patient details too
             String newMessage=" ";
 
-            if(previousId!=null){
+            if(previousId!=null && !previousId.equals("") && !previousId.equals(" ")){
                 MessageEntity prevMessage=getMessageById(previousId);
                 newMessage=newMessage+prevMessage.getSummary(); 
             }
@@ -233,10 +236,16 @@ public class MessageServiceImpl implements MessageService {
                     System.out.println(spec);
                     List<DoctorEntity> doctors=doctorService.getDetailsBySpecialization(spec);
                     for(int j=0;j<doctors.size();j++) AllDoctors.add(doctors.get(j));
-                    // botResponse+="\n"+spec+" : \n";
-                    // for(int j=0;j<doctors.size();j++){
-                    //     botResponse+=doctors.get(j).toString()+"\n";
-                    // }
+
+                    // if empty , add some random doctor
+
+                    if(AllDoctors.size() ==0){
+                        List<DoctorEntity> doct=doctorService.getByAvailability(IsAvailable.AVAILABLE);
+                        if(doct.size()>0){
+                            AllDoctors.add(doct.get(0));
+                        }
+                    }
+                    
                 }
                  specialistEntity.setDoctorEntity(AllDoctors);
             }
@@ -287,7 +296,11 @@ public class MessageServiceImpl implements MessageService {
             messageEntity.setDate(new Date());
             messageEntity.setMessageId(UUIDService.getUUID());
             String previousId=messageEntity.getPreviousMessageId();
-
+            MeetingLink meetingLink= meetingService.CreateMeeting();
+            if(meetingLink!=null){
+                messageEntity.setText(meetingLink.getRoom_url());
+            }
+            
             if(previousId!=null){
                 MessageEntity prevMessage=getMessageById(previousId);
                 messageEntity.setSummary(prevMessage.getSummary());
@@ -319,8 +332,8 @@ public class MessageServiceImpl implements MessageService {
             List<PatientEntity> ids=new ArrayList<>();
             ids.add(messageEntity.getRecPatientEntity());
             ids.add(messageEntity.getSenPatientEntity());
-            // messageRepository.deleteAllByRecPatientEntityAndSenPatientEntity(messageEntity.getRecPatientEntity(),messageEntity.getSenPatientEntity());
-            messageRepository.deleteByRecPatientEntityInAndSenPatientEntityIn(ids, ids);
+            messageRepository.deleteByRecPatientEntityInAndSenPatientEntityIn(ids, ids);            
+            //removing from tempchat table
         }
         catch(Exception ex){
             throw new ItemNotFoundException(ex.getMessage());

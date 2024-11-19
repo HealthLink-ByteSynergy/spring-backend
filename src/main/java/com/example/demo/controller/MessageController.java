@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.entity.DoctorEntity;
 import com.example.demo.entity.MessageEntity;
 import com.example.demo.entity.SpecialistEntity;
 import com.example.demo.exception.InvalidFormatException;
 import com.example.demo.exception.ItemNotFoundException;
 import com.example.demo.service.MessageService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -66,11 +68,13 @@ public class MessageController {
         return messageService.saveMeetingChat(messageEntity);
     }
 
+    @Transactional
     @DeleteMapping("/delete/{messageId}")
     public void deleteById(@PathVariable("messageId") String messageId) throws ItemNotFoundException{
         messageService.deleteByMessageId(messageId);
     }
 
+    @Transactional
     @DeleteMapping("/deleteAll")
     public void deleteByRecAndSenId(@RequestBody MessageEntity messageEntity) throws ItemNotFoundException{
         messageService.deleteAllByRecIdAndSendId(messageEntity);
