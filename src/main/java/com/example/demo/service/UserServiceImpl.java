@@ -36,9 +36,7 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
     private final DoctorService doctorService;
     private final PatientRepository patientRepository;
-
-
-
+  
     @Override
     public String signup(UserEntity user) throws UserDuplicateEmailException, InvalidFormatException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());

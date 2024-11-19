@@ -5,6 +5,8 @@
 - This repository contains the backend code for the application. It's written in Java using the Spring-Boot framework to create a REST API that can be used by various frontend applications.
 - Submission By Team TeleHealth Innovators (Kalyan Ram, Ram Sai Koushik)
 
+- Link to Report : https://docs.google.com/document/d/1gYXBzJ9zCVyO50d3rp7PXXCTlhG0Hhpnr0Td2cD57WY/edit
+
 ## How To Run The Application
 
 - Clone the github repo using the `git clone` command.
